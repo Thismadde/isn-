@@ -15,7 +15,7 @@ white = (255,255,255)
 
 clock = pygame.time.Clock()
 crashed = False
-marioImg = pygame.image.load('mario_droit.png').convert_alpha()
+marioImg = pygame.image.load('Images\Personnage\mario_droit.png').convert_alpha()
 
 def mario(x,y):
     gameDisplay.blit(marioImg, (x,y))

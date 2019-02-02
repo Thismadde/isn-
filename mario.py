@@ -15,7 +15,11 @@ white = (255,255,255)
 
 clock = pygame.time.Clock()
 crashed = False
-marioImg = pygame.image.load('mario_droit.png').convert_alpha()
+marioImg = pygame.image.load('Images\Personnage\mario_droit.png').convert_alpha()
+
+
+back = pygame.image.load("Images`\Level\level1_haut.png")
+x_back = 0
 
 def mario(x,y):
     gameDisplay.blit(marioImg, (x,y))
@@ -49,6 +53,7 @@ while not crashed: #Tout ce qui se passe tant que le jeu ne quitte pas donc loop
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 x_change = 0
                 y_change = 0
+    gameDisplay.blit(back,(x,0))
 
     x += x_change
     y += y_change

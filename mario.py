@@ -1,3 +1,5 @@
+#http://www.mariouniverse.com/
+
 import pygame
 from pygame.locals import *
 pygame.init()
@@ -16,9 +18,11 @@ white = (255,255,255)
 clock = pygame.time.Clock()
 crashed = False
 marioImg = pygame.image.load('Images\Personnage\mario_droit.png').convert_alpha()
+marioImg.set_alpha(128)
+    
 
 
-back = pygame.image.load("Images`\Level\level1_haut.png")
+back = pygame.image.load("Images\Level\level1_haut.png").convert()
 x_back = 0
 
 def mario(x,y):
@@ -53,6 +57,7 @@ while not crashed: #Tout ce qui se passe tant que le jeu ne quitte pas donc loop
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 x_change = 0
                 y_change = 0
+    x = x-1
     gameDisplay.blit(back,(x,0))
 
     x += x_change
@@ -61,8 +66,6 @@ while not crashed: #Tout ce qui se passe tant que le jeu ne quitte pas donc loop
     if x > (displayW - mario_width) or x < 0:
         gameExit = True
 
-
-    gameDisplay.fill(white)
     mario(x, y)
 
     pygame.display.update()

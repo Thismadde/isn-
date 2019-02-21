@@ -18,7 +18,7 @@ crashed = False
 marioImg = pygame.image.load('Images\Personnage\mario_droit.png').convert_alpha()
 
 
-back = pygame.image.load("Images`\Level\level1_haut.png")
+back = pygame.image.load("Images\Level\level1_haut.png")
 x_back = 0
 
 def mario(x,y):

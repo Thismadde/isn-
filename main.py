@@ -63,42 +63,47 @@ class Player(pygame.sprite.Sprite):
         self.width = 50
         self.height = 60
         self.image = pygame.Surface((self.width,self.height))
-        self.rect = self.image.get_rect()      
+        self.rect = self.image.get_rect() 
+        self.rect.x = x
+        self.rect.y = y     
         self.x = x
         self.y = y
+        self.orientation = "Right"
     def collision_with_walls(self):
-        col = pygame.sprite.spritecollide(player,sol_sprites,False,collided= None)
-        if col == True:
-            print(col)
-            print("ok")
-            return False
-        print("Nop")
-        return True
+        blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+        print(blocks_hit_list)
+        for wall in blocks_hit_list:
+            if wall.x == self.x +vel:
+                return True
+        return False
+        
+
     def draw_player(self):
-        win.blit(mario_up,(self.x,self.y))
+        win.blit(mario_up,(self.rect.x,self.rect.y))
     def moove(self,keys):
         global isJumping
         global jumpCount
         if keys[pygame.K_LEFT]:
             if not(self.x - vel<0) and not self.collision_with_walls():
-                Updating_After_Player(self.x,self.y)
-                self.x -= vel
+                Updating_After_Player(self.rect.x,self.rect.y)
+                self.rect.x -= vel
                 self.draw_player()
         if keys[pygame.K_RIGHT]:
-            if not(self.x + vel > WIDTH_display -width):
-                Updating_After_Player(self.x,self.y)
-                self.x += vel
+            if not(self.x + vel > WIDTH_display -width )and not self.collision_with_walls():
+                Updating_After_Player(self.rect.x,self.rect.y)
+                self.rect.x += vel
+                self.collision_with_walls()
                 self.draw_player()
         if not (isJumping):
             if keys[pygame.K_DOWN]:
                 if not ((self.y+vel)>HEIGTH_display-height): #and not self.collision_with_walls:
-                    Updating_After_Player(self.x,self.y)
-                    self.y += vel
+                    Updating_After_Player(self.rect.x,self.rect.y)
+                    self.rect.y += vel
                     self.draw_player()
             if keys[pygame.K_UP]:
                 if not ((self.y-vel)<0): #and not self.collision_with_walls:
-                    Updating_After_Player(self.x,self.y)
-                    self.y -= vel
+                    Updating_After_Player(self.rect.x,self.rect.y)
+                    self.rect.y -= vel
                     self.draw_player()
             #self.draw_player()
             if keys[pygame.K_SPACE]:
@@ -110,8 +115,8 @@ class Player(pygame.sprite.Sprite):
                     negative = -1
                 #if not ((y - jumpCount ** 2 * 0.1) < 0):
                 # y -= jumpCount*0.01 * 2 * 0.5
-                Updating_After_Player(self.x,self.y)
-                self.y -= jumpCount ** 2 * 0.5 * negative
+                Updating_After_Player(self.rect.x,self.rect.y)
+                self.rect.y -= jumpCount ** 2 * 0.5 * negative
                 self.draw_player()
                 jumpCount -= 1
                 #print("Jump " + str(jumpCount))
@@ -128,12 +133,12 @@ class Sol(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, sol_sprites) 
         self.width = TILESIZE
         self.height = TILESIZE
-        self.image = pygame.Surface((TILESIZE,TILESIZE))
+        self.image = brick_img
         self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
         self.y = y
         self.x = x
-        self.rect.x = x * TILESIZE
-        self.rect.y = y *TILESIZE
         brick.append((self.x,self.y))
         self.win = win
         self.Afficher()

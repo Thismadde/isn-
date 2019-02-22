@@ -19,10 +19,14 @@ clock = pygame.time.Clock()
 crashed = False
 marioImg = pygame.image.load('Images\Personnage\mario_droit.png').convert_alpha()
 marioImg.set_alpha(128)
-    
 
 
 
+
+<<<<<<< HEAD:mario.py
+=======
+back = pygame.image.load("Images\Level\level1_haut.png")
+>>>>>>> bdbeac4e0faed8a6f4485b17a903b4e42f155cb7:Ancienne version/mario.py
 x_back = 0
 
 def mario(x,y):

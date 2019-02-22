@@ -7,7 +7,7 @@ x = 50
 y = 50
 HEIGTH_display = 768
 WIDTH_display = 1280
-width = 40
+width = 50
 height = 60
 vel = 15
 TILESIZE = 64
@@ -42,6 +42,9 @@ four = []
 seven = []
 six = []
 
+all_sprites = pygame.sprite.Group()
+sol_sprites = pygame.sprite.Group()
+
 
 def Updating_After_Player(x,y):
     x_ancien = round(x/TILESIZE)*TILESIZE
@@ -55,38 +58,42 @@ def Update_Map():
     map.draw(WIDTH_display,HEIGTH_display,First_Load)#+
     player.draw_player()
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
+        self.width = 50
+        self.hight = 60
+        self.x = x
+        self.y = y
     def collision_with_walls(self):
-        if(x + vel,y + vel) in brick:
+        if(x + vel + self.width,y + vel + self.height) in seven:
             return True
         return False
-    def draw_player(self,x,y):
-        win.blit(mario_up,(x,y))
-    def moove(self,keys,x,y):
+    def draw_player(self):
+        win.blit(mario_up,(self.x,self.y))
+    def moove(self,keys):
         global isJumping
         global jumpCount
         if keys[pygame.K_LEFT]:
-            if not(x - vel<0): # and not self.collision_with_walls:
-                Updating_After_Player(x,y)
-                x -= vel
-                self.draw_player(x,y)
+            if not(x - vel<0) and not self.collision_with_walls:
+                Updating_After_Player(self.x,self.y)
+                self.x -= vel
+                self.draw_player(self.x,self.y)
         if keys[pygame.K_RIGHT]:
             if not(x + vel > WIDTH_display -width):
-                Updating_After_Player(x,y)
-                x += vel
-                self.draw_player(x,y)
+                Updating_After_Player(self.x,self.y)
+                self.x += vel
+                self.draw_player(self.x,self.y)
         if not (isJumping):
             if keys[pygame.K_DOWN]:
                 if not ((y+vel)>HEIGTH_display-height): #and not self.collision_with_walls:
-                    Updating_After_Player(x,y)
-                    y += vel
-                    self.draw_player(x,y)
+                    Updating_After_Player(self.x,self.y)
+                    self.y += vel
+                    self.draw_player(self.x,self.y)
             if keys[pygame.K_UP]:
                 if not ((y-vel)<0): #and not self.collision_with_walls:
-                    Updating_After_Player(x,y)
-                    y -= vel
-                    self.draw_player(x,y)
+                    Updating_After_Player(self.x,self.y)
+                    self.y -= vel
+                    self.draw_player(self.x,self.y)
             #self.draw_player()
             if keys[pygame.K_SPACE]:
                 isJumping = True
@@ -97,9 +104,9 @@ class Player(pygame.sprite.Sprite):
                     negative = -1
                 #if not ((y - jumpCount ** 2 * 0.1) < 0):
                 # y -= jumpCount*0.01 * 2 * 0.5
-                Updating_After_Player(x,y)
-                y -= jumpCount ** 2 * 0.5 * negative
-                self.draw_player(x,y)
+                Updating_After_Player(self.x,self.y)
+                self.y -= jumpCount ** 2 * 0.5 * negative
+                self.draw_player(self.x,self.y)
                 jumpCount -= 1
                 #print("Jump " + str(jumpCount))
                 #else :
@@ -109,6 +116,22 @@ class Player(pygame.sprite.Sprite):
                 isJumping = False
                 jumpCount = 10
         return x,y
+
+class Sol(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.y = y
+        self.x = x
+        brick.append((self.x,self.y))
+        self.win = win
+        self.Afficher()
+    def Afficher(self):
+        self.win.blit(brick_img,(self.x,self.y))
+    def Update(self):
+
+
+
 
 class Map(pygame.sprite.Sprite):
     def __init__(self):
@@ -134,8 +157,7 @@ class Map(pygame.sprite.Sprite):
                             ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
                             win.blit(blue_img,(rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "2" or i == "1":
-                            brick.append((rang*TILESIZE,rang_colonne*TILESIZE))
-                            win.blit(brick_img,(rang*TILESIZE,rang_colonne*TILESIZE))
+                            Sol(rang*TILESIZE,rang_colonne*TILESIZE,win)
                         if i == "5":
                             five.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "6":
@@ -157,13 +179,11 @@ class Map(pygame.sprite.Sprite):
                 win.blit(brick_img,brick[z])
 
 
-ciel_sprites = pygame.sprite.RenderUpdates()
 
 
 
-
-
-player = Player()
+player = Player(x,y)
+all_sprites.add(player)
 map = Map()
 First_Load = True
 
@@ -180,15 +200,14 @@ while run:
      #   time_sleep -= -1
     #else:
      #   time_sleep = 500
-    player.draw_player(x,y)
-
+    player.moove(keys)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
     keys = pygame.key.get_pressed()
-    x,y = player.moove(keys,x,y)
+
 
     pygame.display.update()
 

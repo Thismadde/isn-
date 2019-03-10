@@ -44,10 +44,12 @@ six = []
 
 all_sprites = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
+ciel_sprites = pygame.sprite.Group()
 
 
 def Updating_After_Player(x,y):
-    Update_Map()
+    map.draw()
+    
 """
     x_ancien = round(x/TILESIZE)*TILESIZE
     y_ancien = round(y/TILESIZE)*TILESIZE
@@ -56,9 +58,20 @@ def Updating_After_Player(x,y):
             if(x_ancien+(i*TILESIZE),y_ancien+z*TILESIZE) in ciel:
                 win.blit(blue_img,((x_ancien+i*TILESIZE),y_ancien+z*TILESIZE))
 """
-def Update_Map():
-    win.fill((0,0,0))
-    map.draw()
+class Camera:
+    def __init__(self,width,height):
+        self.camera = pygame.Rect(0,0,width,height)
+        self.width = width
+        self.height = height
+    def apply(self,entity):
+        x_cam = entity[0] - self.camera.x
+        y_cam = entity[1] - self.camera.y
+        return (entity[0],entity[1])
+    def update(self,target):
+        x = -target.rect.x + int(WIDTH_display/2)
+        y = -target.rect.y + int(HEIGTH_display/2)
+        self.camera = pygame.Rect(x,y,self.width,self.height)
+
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
@@ -166,6 +179,7 @@ class Player(pygame.sprite.Sprite):
                     Updating_After_Player(self.rect.x,self.rect.y)
                     self.rect.y -= vel
                     self.draw_player()
+        #camera.update(player)
             #self.draw_player()
             #if keys[pygame.K_SPACE]:
             #   self.isJumping = True
@@ -210,6 +224,23 @@ class Sol(pygame.sprite.Sprite):
     def Afficher(self):
         self.win.blit(brick_img,(self.x,self.y))
 
+class Ciel(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self, ciel_sprites) 
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = brick_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.y = y
+        self.x = x
+        brick.append((self.x,self.y))
+        self.win = win
+        self.Afficher()
+    def Afficher(self):
+        self.win.blit(blue_img,(self.x,self.y))
+
 
 
 
@@ -227,10 +258,6 @@ class Map(pygame.sprite.Sprite):
         global rang
         global ciel
         global brick
-        global five
-        global four
-        global seven
-        global six
         self.data = []
         if self.load:
             with open(niveau,"r") as f:
@@ -239,18 +266,11 @@ class Map(pygame.sprite.Sprite):
                     lenght_ligne = len(ligne)
                     for i in ligne:
                         if i == "0":
+                            Ciel(rang*TILESIZE,rang_colonne*TILESIZE,win)
                             ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
-                            win.blit(blue_img,(rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "2" or i == "1":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win)
-                        if i == "5":
-                            five.append((rang*TILESIZE,rang_colonne*TILESIZE))
-                        if i == "6":
-                            six.append((rang*TILESIZE,rang_colonne*TILESIZE))
-                        if i == "7":
-                            seven.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "4":
-                            four.append((rang*TILESIZE,rang_colonne*TILESIZE))
                             win.blit(brick_img,(rang*TILESIZE,rang_colonne*TILESIZE))
                         rang = rang + 1
                     rang_colonne += 1
@@ -259,17 +279,13 @@ class Map(pygame.sprite.Sprite):
             #print(ciel)
             self.load = False
         else:
-            for f in ciel:
-                #if f[0] < self.width:
-                win.blit(blue_img,f)
-            for z in brick:
-                #if z[0] < self.width: #, Consomme trop de FPS de check ??
-                win.blit(brick_img,z)
+            for sprite in ciel:
+                win.blit(blue_img,camera.apply(sprite))
 
 
 
 
-
+camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
 all_sprites.add(player)
 First_Load = True

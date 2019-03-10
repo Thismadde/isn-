@@ -13,7 +13,7 @@ height = 60
 vel = 5
 TILESIZE = 64
 
-FPS = 180
+FPS = 250
 
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
@@ -48,8 +48,9 @@ ciel_sprites = pygame.sprite.Group()
 
 
 def Updating_After_Player(x,y):
+    win.fill((0,0,0))
     map.draw()
-    
+
 """
     x_ancien = round(x/TILESIZE)*TILESIZE
     y_ancien = round(y/TILESIZE)*TILESIZE
@@ -64,12 +65,12 @@ class Camera:
         self.width = width
         self.height = height
     def apply(self,entity):
-        x_cam = entity[0] - self.camera.x
-        y_cam = entity[1] - self.camera.y
-        return (entity[0],entity[1])
+        x_cam = entity[0] + self.camera.x
+        return (x_cam,entity[1])
     def update(self,target):
         x = -target.rect.x + int(WIDTH_display/2)
         y = -target.rect.y + int(HEIGTH_display/2)
+        x = min(0, x)  # left
         self.camera = pygame.Rect(x,y,self.width,self.height)
 
 class Player(pygame.sprite.Sprite):
@@ -78,9 +79,9 @@ class Player(pygame.sprite.Sprite):
         self.width = 50
         self.height = 60
         self.image = pygame.Surface((self.width,self.height))
-        self.rect = self.image.get_rect() 
+        self.rect = self.image.get_rect()
         self.rect.x = x
-        self.rect.y = y     
+        self.rect.y = y
         self.x = x
         self.y = y
         self.orientation = "Right"
@@ -108,7 +109,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.y += (self.jumpCount ** 2 * 0.5 * negative)
                 return False
-                
+
 
     def collision_with_walls(self):
         #self.isCollindingWithGround()
@@ -118,7 +119,7 @@ class Player(pygame.sprite.Sprite):
             if not(blocks_hit_list == []):
                 self.rect.x -= vel*2
                 return True
-            else: 
+            else:
                 self.rect.x -= vel
                 return False
         if self.orientation == "Left":
@@ -148,7 +149,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.y += vel
                 return False
-        
+
 
     def draw_player(self):
         win.blit(mario_up,(self.rect.x,self.rect.y))
@@ -159,13 +160,15 @@ class Player(pygame.sprite.Sprite):
             if not(self.x - vel<0) and not self.collision_with_walls():
                 Updating_After_Player(self.rect.x,self.rect.y)
                 self.rect.x -= vel
+                camera.update(player)
                 self.draw_player()
         if keys[pygame.K_RIGHT]:
             self.orientation = "Right"
-            if not(self.x + vel > WIDTH_display -width )and not self.collision_with_walls():
+            if not self.collision_with_walls():
                 Updating_After_Player(self.rect.x,self.rect.y)
                 self.rect.x += vel
                 self.draw_player()
+                camera.update(player)
         if not (self.isJumping):
             if keys[pygame.K_DOWN]:
                 self.orientation = "Down"
@@ -173,17 +176,18 @@ class Player(pygame.sprite.Sprite):
                     Updating_After_Player(self.rect.x,self.rect.y)
                     self.rect.y += vel
                     self.draw_player()
+                    camera.update(player)
             if keys[pygame.K_UP]:
                 self.orientation = "Up"
                 if not ((self.y-vel)<0)and not self.collision_with_walls():
                     Updating_After_Player(self.rect.x,self.rect.y)
                     self.rect.y -= vel
                     self.draw_player()
-        #camera.update(player)
+                    camera.update(player)
             #self.draw_player()
             #if keys[pygame.K_SPACE]:
             #   self.isJumping = True
-        """if (self.isJumping):    
+        """if (self.isJumping):
             if self.jumpCount >= -10:
                 negative = 1
                 self.orientation = "Up"
@@ -209,7 +213,7 @@ class Player(pygame.sprite.Sprite):
 
 class Sol(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
-        pygame.sprite.Sprite.__init__(self, sol_sprites) 
+        pygame.sprite.Sprite.__init__(self, sol_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
         self.image = brick_img
@@ -226,7 +230,7 @@ class Sol(pygame.sprite.Sprite):
 
 class Ciel(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
-        pygame.sprite.Sprite.__init__(self, ciel_sprites) 
+        pygame.sprite.Sprite.__init__(self, ciel_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
         self.image = brick_img
@@ -279,8 +283,11 @@ class Map(pygame.sprite.Sprite):
             #print(ciel)
             self.load = False
         else:
+            for sprite in brick:
+                win.blit(brick_img,camera.apply(sprite))
             for sprite in ciel:
                 win.blit(blue_img,camera.apply(sprite))
+
 
 
 
@@ -306,7 +313,7 @@ fps_all = 0
 number = 0
 while run:
     clock = pygame.time.Clock()
-    milliseconds = clock.tick(FPS) 
+    milliseconds = clock.tick(FPS)
     #if (time_sleep > -500):
      #   time_sleep -= -1
     #else:
@@ -317,13 +324,13 @@ while run:
             run = False
             print("Moyenne des FPS :" + str(fps_all/number))
         #Compteur de FPS
-        elif event.type == USEREVENT:        
+        elif event.type == USEREVENT:
             fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
             fps_all += timer.get_fps()
             number += 1
             fps_rect = fps_label.get_rect()
 
-    
+
 
     keys = pygame.key.get_pressed()
     player.moove(keys)

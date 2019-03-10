@@ -3,28 +3,28 @@ pygame.init()
 
 
 
-x = 50
-y = 50
+
 HEIGTH_display = 768
 WIDTH_display = 1280
+x = 50
+y = 768-3*64
 width = 50
 height = 60
-vel = 15
+vel = 5
 TILESIZE = 64
 
-FPS = 120
+FPS = 180
 
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
-pygame.display.set_caption("Second Game")
+pygame.display.set_caption("Super Mario Bross")
 blue_img = pygame.image.load("data/sprites/blue.png").convert_alpha()
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert_alpha()
 mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60 ))
 
 run = True
-isJumping = False
-jumpCount = 10
+
 
 RED = (255,0,0)
 BLUE = (0, 0, 50)
@@ -47,16 +47,18 @@ sol_sprites = pygame.sprite.Group()
 
 
 def Updating_After_Player(x,y):
+    Update_Map()
+"""
     x_ancien = round(x/TILESIZE)*TILESIZE
     y_ancien = round(y/TILESIZE)*TILESIZE
     for i in range(-2,3):
         for z in range(-2,3):
             if(x_ancien+(i*TILESIZE),y_ancien+z*TILESIZE) in ciel:
                 win.blit(blue_img,((x_ancien+i*TILESIZE),y_ancien+z*TILESIZE))
+"""
 def Update_Map():
     win.fill((0,0,0))
-    map.draw(WIDTH_display,HEIGTH_display,First_Load)#+
-    player.draw_player()
+    map.draw()
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
@@ -69,63 +71,126 @@ class Player(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.orientation = "Right"
-    def collision_with_walls(self):
+        self.isCollinding = True
+        self.isJumping = False
+        self.jumpCount = 10
+    def isCollindingWithGround(self):
+        self.rect.y += 10
         blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
         print(blocks_hit_list)
-        for wall in blocks_hit_list:
-            if wall.x == self.x +vel:
+        self.rect.y -= 10
+        if not(blocks_hit_list == []):
+            self.isCollinding = True
+            print("True")
+        else:
+            self.isCollinding = False
+            print("False")
+    def collision_while_jumping(self,negative):
+        if(self.isJumping):
+            self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                self.rect.y += (self.jumpCount ** 2 * 0.5 * negative)*2
                 return True
-        return False
+            else:
+                self.rect.y += (self.jumpCount ** 2 * 0.5 * negative)
+                return False
+                
+
+    def collision_with_walls(self):
+        #self.isCollindingWithGround()
+        if self.orientation == "Right":
+            self.rect.x += vel
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                self.rect.x -= vel*2
+                return True
+            else: 
+                self.rect.x -= vel
+                return False
+        if self.orientation == "Left":
+            self.rect.x -= vel
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                self.rect.x += vel*2
+                return True
+            else:
+                self.rect.x += vel
+                return False
+        if self.orientation == "Down":
+            self.rect.y += vel
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                self.rect.y -= vel*2
+                return True
+            else:
+                self.rect.y -= vel
+                return False
+        if self.orientation == "Up":
+            self.rect.y -= vel
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                self.rect.y += vel*2
+                return True
+            else:
+                self.rect.y += vel
+                return False
         
 
     def draw_player(self):
         win.blit(mario_up,(self.rect.x,self.rect.y))
     def moove(self,keys):
-        global isJumping
-        global jumpCount
+        #if (self.isCollinding):
         if keys[pygame.K_LEFT]:
+            self.orientation = "Left"
             if not(self.x - vel<0) and not self.collision_with_walls():
                 Updating_After_Player(self.rect.x,self.rect.y)
                 self.rect.x -= vel
                 self.draw_player()
         if keys[pygame.K_RIGHT]:
+            self.orientation = "Right"
             if not(self.x + vel > WIDTH_display -width )and not self.collision_with_walls():
                 Updating_After_Player(self.rect.x,self.rect.y)
                 self.rect.x += vel
-                self.collision_with_walls()
                 self.draw_player()
-        if not (isJumping):
+        if not (self.isJumping):
             if keys[pygame.K_DOWN]:
-                if not ((self.y+vel)>HEIGTH_display-height): #and not self.collision_with_walls:
+                self.orientation = "Down"
+                if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                     Updating_After_Player(self.rect.x,self.rect.y)
                     self.rect.y += vel
                     self.draw_player()
             if keys[pygame.K_UP]:
-                if not ((self.y-vel)<0): #and not self.collision_with_walls:
+                self.orientation = "Up"
+                if not ((self.y-vel)<0)and not self.collision_with_walls():
                     Updating_After_Player(self.rect.x,self.rect.y)
                     self.rect.y -= vel
                     self.draw_player()
             #self.draw_player()
-            if keys[pygame.K_SPACE]:
-                isJumping = True
-        else:
-            if jumpCount >= -10:
+            #if keys[pygame.K_SPACE]:
+            #   self.isJumping = True
+        """if (self.isJumping):    
+            if self.jumpCount >= -10:
                 negative = 1
-                if jumpCount < 1:
+                self.orientation = "Up"
+                if self.jumpCount < 1:
+                    self.orientation = "Down"
                     negative = -1
+                if not self.collision_while_jumping(negative):
                 #if not ((y - jumpCount ** 2 * 0.1) < 0):
                 # y -= jumpCount*0.01 * 2 * 0.5
-                Updating_After_Player(self.rect.x,self.rect.y)
-                self.rect.y -= jumpCount ** 2 * 0.5 * negative
-                self.draw_player()
-                jumpCount -= 1
+                    Updating_After_Player(self.rect.x,self.rect.y)
+                    self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
+                    self.draw_player()
+                    self.jumpCount -= 1
                 #print("Jump " + str(jumpCount))
                 #else :
-                 #   jumpCount = 10
-                  #  isJumping = False
+                #   jumpCount = 10
+                #  isJumping = False
             else:
-                isJumping = False
-                jumpCount = 10
+                self.isJumping = False
+                self.jumpCount = 10
+            """
         return x,y
 
 class Sol(pygame.sprite.Sprite):
@@ -149,9 +214,15 @@ class Sol(pygame.sprite.Sprite):
 
 
 class Map(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
         z = 5
-    def draw(self,WIDTH_display,HEIGHT_display,First_Load):
+        self.width = WIDTH_display
+        self.height = HEIGHT_display
+        self.load = First_Load
+        self.draw()
+    #def Camera(self):
+
+    def draw(self):
         global rang_colonne
         global rang
         global ciel
@@ -161,13 +232,12 @@ class Map(pygame.sprite.Sprite):
         global seven
         global six
         self.data = []
-        if(First_Load):
+        if self.load:
             with open(niveau,"r") as f:
                 First_Load = False
                 for ligne in f:
                     lenght_ligne = len(ligne)
                     for i in ligne:
-                        #pos_image = (rang*WIDTH_display/TILESIZE,rang_colonne*HEIGHT_display/TILESIZE)
                         if i == "0":
                             ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
                             win.blit(blue_img,(rang*TILESIZE,rang_colonne*TILESIZE))
@@ -187,11 +257,14 @@ class Map(pygame.sprite.Sprite):
                     rang = 0
                 rang_colonne = 0
             #print(ciel)
+            self.load = False
         else:
             for f in ciel:
-                win.blit(blue_img,ciel[f])
+                #if f[0] < self.width:
+                win.blit(blue_img,f)
             for z in brick:
-                win.blit(brick_img,brick[z])
+                #if z[0] < self.width: #, Consomme trop de FPS de check ??
+                win.blit(brick_img,z)
 
 
 
@@ -199,18 +272,25 @@ class Map(pygame.sprite.Sprite):
 
 player = Player(x,y)
 all_sprites.add(player)
-map = Map()
 First_Load = True
-
-map.draw(WIDTH_display,HEIGTH_display,First_Load)#+
+map = Map(WIDTH_display,HEIGTH_display,First_Load)
 player.draw_player()
 pygame.display.update()
 
 
+timer = pygame.time.Clock()
+font_cambria = pygame.font.SysFont('Cambria',24)
+fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
+fps_rect = fps_label.get_rect()
 
+
+USEREVENT = 24
+pygame.time.set_timer(USEREVENT, 1000)
+fps_all = 0
+number = 0
 while run:
     clock = pygame.time.Clock()
-    dt = clock.tick(FPS)
+    milliseconds = clock.tick(FPS) 
     #if (time_sleep > -500):
      #   time_sleep -= -1
     #else:
@@ -219,10 +299,24 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+            print("Moyenne des FPS :" + str(fps_all/number))
+        #Compteur de FPS
+        elif event.type == USEREVENT:        
+            fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
+            fps_all += timer.get_fps()
+            number += 1
+            fps_rect = fps_label.get_rect()
+
+    
 
     keys = pygame.key.get_pressed()
     player.moove(keys)
-
+    #Compteur de FPS :
+    dt = timer.tick() / 1000
+    win.blit(blue_img,(0,0))
+    win.blit(blue_img,(TILESIZE,0))
+    win.blit(fps_label,fps_rect)
+    #Fin du compteur
 
     pygame.display.update()
 pygame.quit()

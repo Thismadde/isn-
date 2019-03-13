@@ -13,15 +13,16 @@ height = 60
 vel = 5
 TILESIZE = 64
 
-FPS = 250
+FPS = 180
 
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
 pygame.display.set_caption("Super Mario Bross")
-blue_img = pygame.image.load("data/sprites/blue.png").convert_alpha()
-brick_img = pygame.image.load("data/sprites/brick_64.png").convert_alpha()
+blue_img = pygame.image.load("data/sprites/blue.png").convert()
+brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
-mario_up = pygame.transform.scale(mario_up, (50,60 ))
+mario_up = pygame.transform.scale(mario_up, (50,60))
+background_img = pygame.image.load("data/map/background.png").convert()
 
 run = True
 
@@ -47,10 +48,8 @@ sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
 
-def Updating_After_Player(x,y):
-    win.fill((0,0,0))
-    map.draw()
-
+#def Updating_After_Player(x,y):
+#    map.draw()
 """
     x_ancien = round(x/TILESIZE)*TILESIZE
     y_ancien = round(y/TILESIZE)*TILESIZE
@@ -66,10 +65,10 @@ class Camera:
         self.height = height
     def apply(self,entity):
         x_cam = entity[0] + self.camera.x
-        return (x_cam,entity[1])
+        return (x_cam)
     def update(self,target):
-        x = -target.rect.x + int(WIDTH_display/2)
-        y = -target.rect.y + int(HEIGTH_display/2)
+        x = -target.rect.x + (WIDTH_display/2)
+        y = -target.rect.y + (HEIGTH_display/2)
         x = min(0, x)  # left
         self.camera = pygame.Rect(x,y,self.width,self.height)
 
@@ -88,7 +87,7 @@ class Player(pygame.sprite.Sprite):
         self.isCollinding = True
         self.isJumping = False
         self.jumpCount = 10
-    def isCollindingWithGround(self):
+    """def isCollindingWithGround(self): Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10
         blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
         print(blocks_hit_list)
@@ -99,6 +98,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.isCollinding = False
             print("False")
+    """
     def collision_while_jumping(self,negative):
         if(self.isJumping):
             self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
@@ -112,7 +112,6 @@ class Player(pygame.sprite.Sprite):
 
 
     def collision_with_walls(self):
-        #self.isCollindingWithGround()
         if self.orientation == "Right":
             self.rect.x += vel
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
@@ -152,42 +151,43 @@ class Player(pygame.sprite.Sprite):
 
 
     def draw_player(self):
-        win.blit(mario_up,(self.rect.x,self.rect.y))
+        x_new = camera.apply([self.rect.x])
+        win.blit(mario_up,(x_new,self.rect.y))
     def moove(self,keys):
         #if (self.isCollinding):
         if keys[pygame.K_LEFT]:
             self.orientation = "Left"
             if not(self.x - vel<0) and not self.collision_with_walls():
-                Updating_After_Player(self.rect.x,self.rect.y)
+                map.draw()
                 self.rect.x -= vel
                 camera.update(player)
                 self.draw_player()
         if keys[pygame.K_RIGHT]:
             self.orientation = "Right"
             if not self.collision_with_walls():
-                Updating_After_Player(self.rect.x,self.rect.y)
+                map.draw()
                 self.rect.x += vel
-                self.draw_player()
                 camera.update(player)
+                self.draw_player()
         if not (self.isJumping):
             if keys[pygame.K_DOWN]:
                 self.orientation = "Down"
                 if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                    Updating_After_Player(self.rect.x,self.rect.y)
+                    map.draw()
                     self.rect.y += vel
-                    self.draw_player()
                     camera.update(player)
+                    self.draw_player()
             if keys[pygame.K_UP]:
                 self.orientation = "Up"
                 if not ((self.y-vel)<0)and not self.collision_with_walls():
-                    Updating_After_Player(self.rect.x,self.rect.y)
+                    map.draw()
                     self.rect.y -= vel
-                    self.draw_player()
                     camera.update(player)
+                    self.draw_player()
             #self.draw_player()
             #if keys[pygame.K_SPACE]:
             #   self.isJumping = True
-        """if (self.isJumping):
+        """if (self.isJumping): Fonction de saut a ameliorer
             if self.jumpCount >= -10:
                 negative = 1
                 self.orientation = "Up"
@@ -258,6 +258,7 @@ class Map(pygame.sprite.Sprite):
     #def Camera(self):
 
     def draw(self):
+        win.blit(background_img, (0, 0))
         global rang_colonne
         global rang
         global ciel
@@ -269,13 +270,12 @@ class Map(pygame.sprite.Sprite):
                 for ligne in f:
                     lenght_ligne = len(ligne)
                     for i in ligne:
-                        if i == "0":
-                            Ciel(rang*TILESIZE,rang_colonne*TILESIZE,win)
-                            ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
+                        #if i == "0":
+                            #Ciel(rang*TILESIZE,rang_colonne*TILESIZE,win) C'est en train d'être remplacé par le background
+                            #ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "2" or i == "1":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win)
-                        if i == "4":
-                            win.blit(brick_img,(rang*TILESIZE,rang_colonne*TILESIZE))
+
                         rang = rang + 1
                     rang_colonne += 1
                     rang = 0
@@ -283,10 +283,12 @@ class Map(pygame.sprite.Sprite):
             #print(ciel)
             self.load = False
         else:
+            win.blit(background_img, (camera.apply([0]),0))
             for sprite in brick:
-                win.blit(brick_img,camera.apply(sprite))
-            for sprite in ciel:
-                win.blit(blue_img,camera.apply(sprite))
+                win.blit(brick_img,(camera.apply(sprite),sprite[1]))
+            """for sprite in ciel: Même chose remplacé par le background
+                win.blit(blue_img,(camera.apply(sprite),sprite[1]))
+            """
 
 
 
@@ -297,6 +299,7 @@ player = Player(x,y)
 all_sprites.add(player)
 First_Load = True
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
+
 player.draw_player()
 pygame.display.update()
 
@@ -329,9 +332,6 @@ while run:
             fps_all += timer.get_fps()
             number += 1
             fps_rect = fps_label.get_rect()
-
-
-
     keys = pygame.key.get_pressed()
     player.moove(keys)
     #Compteur de FPS :

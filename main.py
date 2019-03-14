@@ -228,26 +228,6 @@ class Sol(pygame.sprite.Sprite):
     def Afficher(self):
         self.win.blit(brick_img,(self.x,self.y))
 
-class Ciel(pygame.sprite.Sprite):
-    def __init__(self,x,y,win):
-        pygame.sprite.Sprite.__init__(self, ciel_sprites)
-        self.width = TILESIZE
-        self.height = TILESIZE
-        self.image = brick_img
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.y = y
-        self.x = x
-        brick.append((self.x,self.y))
-        self.win = win
-        self.Afficher()
-    def Afficher(self):
-        self.win.blit(blue_img,(self.x,self.y))
-
-
-
-
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
         z = 5

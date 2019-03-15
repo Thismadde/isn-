@@ -13,7 +13,7 @@ height = 60
 vel = 5
 TILESIZE = 64
 
-FPS = 180
+FPS = 500
 
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
@@ -230,12 +230,10 @@ class Sol(pygame.sprite.Sprite):
 
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
-        z = 5
         self.width = WIDTH_display
         self.height = HEIGHT_display
         self.load = First_Load
         self.draw()
-    #def Camera(self):
 
     def draw(self):
         win.blit(background_img, (0, 0))
@@ -243,12 +241,9 @@ class Map(pygame.sprite.Sprite):
         global rang
         global ciel
         global brick
-        self.data = []
         if self.load:
             with open(niveau,"r") as f:
-                First_Load = False
                 for ligne in f:
-                    lenght_ligne = len(ligne)
                     for i in ligne:
                         #if i == "0":
                             #Ciel(rang*TILESIZE,rang_colonne*TILESIZE,win) C'est en train d'être remplacé par le background
@@ -278,6 +273,7 @@ camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
 all_sprites.add(player)
 First_Load = True
+
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
 player.draw_player()

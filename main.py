@@ -99,8 +99,8 @@ class Player(pygame.sprite.Sprite):
         self.isCollinding = True
         self.isJumping = False
         self.jumpCount = 10
-
-    """def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
+    
+    def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10
         blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
         self.rect.y -= 10
@@ -125,7 +125,6 @@ class Player(pygame.sprite.Sprite):
                     self.isCollinding = True
                     print("False")
                     return True         
-    """        
                     
     """def collision_while_jumping(self,negative):
         if(self.isJumping):
@@ -294,7 +293,6 @@ class Map(pygame.sprite.Sprite):
                             #ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "2" or i == "1":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win)
-
                         rang = rang + 1
                     rang_colonne += 1
                     rang = 0
@@ -306,12 +304,6 @@ class Map(pygame.sprite.Sprite):
             for sprite in brick:
                 if not sprite[0] < camera.x_min and not sprite[0] > camera.x_max: # permet de gagner des FPS, prit la zone de caméra
                     win.blit(brick_img,(camera.apply(sprite),sprite[1]))
-            """for sprite in ciel: Même chose remplacé par le background
-                win.blit(blue_img,(camera.apply(sprite),sprite[1]))
-            """
-
-
-
 
 
 camera = Camera(WIDTH_display,HEIGTH_display)

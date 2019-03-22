@@ -66,13 +66,21 @@ class Camera:
         self.camera = pygame.Rect(0,0,width,height)
         self.width = width
         self.height = height
+        # utile pour optimiser le blit de la map, blit uniquement la zone de la caméra d'ou le x_min x_max, on blit que entre ces valeurs de x
+        self.x_min = 0
+        self.x_max = width
+        ##
     def apply(self,entity):
         x_cam = entity[0] + self.camera.x
         return (x_cam)
     def update(self,target):
         x = -target.rect.x + (WIDTH_display/2)
         y = -target.rect.y + (HEIGTH_display/2)
-        x = min(0, x)  # left
+        x = min(0, x)  #permet de définir la valeur min que x doit avoir, avant que le joueur arrive au centre de l'écran x < 0
+        #update du x_min et x_max en fonction de la position du player
+        self.x_min = target.rect.x - WIDTH_display /2 - TILESIZE
+        self.x_max = target.rect.x + WIDTH_display
+        ##
         self.camera = pygame.Rect(x,y,self.width,self.height)
 
 class Player(pygame.sprite.Sprite):
@@ -92,7 +100,7 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 10
 
-    def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
+    """def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10
         blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
         self.rect.y -= 10
@@ -102,21 +110,24 @@ class Player(pygame.sprite.Sprite):
         else:
             self.isCollinding = False
             while not self.isCollinding:
-                self.rect.y += 10
+                self.rect.y += 1
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-                self.rect.y -= 10
+                self.rect.y -= 1
                 if (blocks_hit_list == []):
                     self.rect.y += self.Vgravite
-                    print(self.rect.y)
+                    if(self.rect.y >HEIGTH_display):
+                        self.isCollinding = True
                     self.orientation = "Down"
-                    self.draw_player()
+                    map.draw()
+                    self.draw_player()    
+                    time.sleep(0.001)  
                 else:
                     self.isCollinding = True
                     print("False")
                     return True         
-                time.sleep(0.01)   
+    """        
                     
-    def collision_while_jumping(self,negative):
+    """def collision_while_jumping(self,negative):
         if(self.isJumping):
             self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
@@ -126,6 +137,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.y += (self.jumpCount ** 2 * 0.5 * negative)
                 return False
+    """
 
     def collision_with_walls(self):
         if self.orientation == "Right":
@@ -181,7 +193,7 @@ class Player(pygame.sprite.Sprite):
             win.blit(mario_up,(x_new,self.rect.y))
 
     def moove(self,keys):
-        self.isCollindingWithGround()
+        #self.isCollindingWithGround()
         if keys[pygame.K_LEFT]:
             self.orientation = "Left"
             if not(self.x - vel<0) and not self.collision_with_walls():
@@ -292,7 +304,8 @@ class Map(pygame.sprite.Sprite):
         else:
             win.blit(background_img, (camera.apply([0]),0))
             for sprite in brick:
-                win.blit(brick_img,(camera.apply(sprite),sprite[1]))
+                if not sprite[0] < camera.x_min and not sprite[0] > camera.x_max: # permet de gagner des FPS, prit la zone de caméra
+                    win.blit(brick_img,(camera.apply(sprite),sprite[1]))
             """for sprite in ciel: Même chose remplacé par le background
                 win.blit(blue_img,(camera.apply(sprite),sprite[1]))
             """

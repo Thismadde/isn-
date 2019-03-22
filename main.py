@@ -1,4 +1,5 @@
 import pygame
+import time
 pygame.init()
 
 
@@ -85,22 +86,36 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = y
         self.x = x
         self.y = y
+        self.Vgravite = 1
         self.orientation = "Right"
         self.isCollinding = True
         self.isJumping = False
         self.jumpCount = 10
-    """def isCollindingWithGround(self): Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
+
+    def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10
         blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-        print(blocks_hit_list)
         self.rect.y -= 10
         if not(blocks_hit_list == []):
             self.isCollinding = True
-            print("True")
+            return True
         else:
             self.isCollinding = False
-            print("False")
-    """
+            while not self.isCollinding:
+                self.rect.y += 10
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                self.rect.y -= 10
+                if (blocks_hit_list == []):
+                    self.rect.y += self.Vgravite
+                    print(self.rect.y)
+                    self.orientation = "Down"
+                    self.draw_player()
+                else:
+                    self.isCollinding = True
+                    print("False")
+                    return True         
+                time.sleep(0.01)   
+                    
     def collision_while_jumping(self,negative):
         if(self.isJumping):
             self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
@@ -111,7 +126,6 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.y += (self.jumpCount ** 2 * 0.5 * negative)
                 return False
-
 
     def collision_with_walls(self):
         if self.orientation == "Right":
@@ -166,9 +180,8 @@ class Player(pygame.sprite.Sprite):
             x_new = camera.apply([self.rect.x])
             win.blit(mario_up,(x_new,self.rect.y))
 
-
     def moove(self,keys):
-        #if (self.isCollinding):
+        self.isCollindingWithGround()
         if keys[pygame.K_LEFT]:
             self.orientation = "Left"
             if not(self.x - vel<0) and not self.collision_with_walls():

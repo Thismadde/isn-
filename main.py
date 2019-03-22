@@ -13,7 +13,7 @@ height = 60
 vel = 5
 TILESIZE = 64
 
-FPS = 500
+FPS = 180
 
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
@@ -22,6 +22,8 @@ blue_img = pygame.image.load("data/sprites/blue.png").convert()
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
+mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
+mario_left = pygame.transform.scale(mario_left, (50,60))
 background_img = pygame.image.load("data/map/background.png").convert()
 
 run = True
@@ -151,8 +153,20 @@ class Player(pygame.sprite.Sprite):
 
 
     def draw_player(self):
-        x_new = camera.apply([self.rect.x])
-        win.blit(mario_up,(x_new,self.rect.y))
+        if (self.orientation == "Right"):
+            x_new = camera.apply([self.rect.x])
+            win.blit(mario_up,(x_new,self.rect.y))
+        if (self.orientation == "Left"):
+            x_new = camera.apply([self.rect.x])
+            win.blit(mario_left,(x_new,self.rect.y))
+        if (self.orientation == "Up"):
+            x_new = camera.apply([self.rect.x])
+            win.blit(mario_up,(x_new,self.rect.y))
+        if (self.orientation == "Down"):
+            x_new = camera.apply([self.rect.x])
+            win.blit(mario_up,(x_new,self.rect.y))
+
+
     def moove(self,keys):
         #if (self.isCollinding):
         if keys[pygame.K_LEFT]:
@@ -230,10 +244,12 @@ class Sol(pygame.sprite.Sprite):
 
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
+        z = 5
         self.width = WIDTH_display
         self.height = HEIGHT_display
         self.load = First_Load
         self.draw()
+    #def Camera(self):
 
     def draw(self):
         win.blit(background_img, (0, 0))
@@ -241,9 +257,12 @@ class Map(pygame.sprite.Sprite):
         global rang
         global ciel
         global brick
+        self.data = []
         if self.load:
             with open(niveau,"r") as f:
+                First_Load = False
                 for ligne in f:
+                    lenght_ligne = len(ligne)
                     for i in ligne:
                         #if i == "0":
                             #Ciel(rang*TILESIZE,rang_colonne*TILESIZE,win) C'est en train d'être remplacé par le background
@@ -273,7 +292,6 @@ camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
 all_sprites.add(player)
 First_Load = True
-
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
 player.draw_player()

@@ -50,7 +50,7 @@ all_sprites = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
-#salut
+
 
 #def Updating_After_Player(x,y):
 #    map.draw()

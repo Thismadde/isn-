@@ -11,10 +11,10 @@ x = 50
 y = 768-3*64
 width = 50
 height = 60
-vel = 5
+vel =4
 TILESIZE = 64
 
-FPS = 180
+FPS = 1000
 
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
@@ -76,7 +76,7 @@ class Camera:
         self.height = height
     def apply(self,entity):
         x_cam = entity[0] + self.camera.x
-        if (self.x < x_cam< self.x + WIDTH_display):
+        if (-self.x - TILESIZE < entity[0]< -self.x + WIDTH_display):
             return (True,x_cam)
         else:
             return (False,x_cam)
@@ -329,7 +329,19 @@ class Map(pygame.sprite.Sprite):
             #print(ciel)
             self.load = False
         else:
+
             win.blit(background_img, (camera.apply_player([0]),0))
+            '''
+            for sprite in brick:
+                win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
+            for sprite in terre_herbe_array:
+                win.blit(terre_herbe,(camera.apply(sprite[0]),sprite[1]))    
+            for sprite in terre_array:
+                win.blit(terre,(camera.apply(sprite[0]),sprite[1]))    
+            for sprite in surprise_array:
+                win.blit(Block_surprise,(camera.apply(sprite[0]),sprite[1]))    
+            '''
+            
             for sprite in brick:
                 CanDoIt,x_new = camera.apply(sprite)
                 if (CanDoIt == True):
@@ -346,12 +358,6 @@ class Map(pygame.sprite.Sprite):
                 CanDoIt,x_new = camera.apply(sprite)
                 if (CanDoIt == True):
                     win.blit(Block_surprise,(x_new,sprite[1]))    
-            """for sprite in ciel: Même chose remplacé par le background
-                win.blit(blue_img,(camera.apply(sprite),sprite[1]))
-            """
-
-
-
 
 
 camera = Camera(WIDTH_display,HEIGTH_display)

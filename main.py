@@ -20,31 +20,36 @@ FPS = 180
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
 pygame.display.set_caption("Super Mario Bross")
 blue_img = pygame.image.load("data/sprites/blue.png").convert()
-brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
+
 mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
 background_img = pygame.image.load("data/map/background.png").convert()
 
-run = True
+brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
+terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
+terre_herbe = pygame.image.load("data/sprites/sol_1-64.png").convert()
+Block_surprise = pygame.image.load("data/sprites/BlockUuh-64.png").convert()
 
+run = True
+CanDoIt = True
 
 RED = (255,0,0)
 BLUE = (0, 0, 50)
 BROWN = (150,75,0)
 
-niveau = "data/map/map2.txt"
+niveau = "data/map/mapclean.txt"
 rang_colonne = 0
 rang = 0
 time_sleep = 500
 
 ciel = []
 brick = []
-five = []
-four = []
-seven = []
-six = []
+brick = []
+terre_herbe_array = []
+terre_array = []
+surprise_array = []
 
 all_sprites = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
@@ -66,6 +71,8 @@ class Camera:
     def __init__(self,width,height):
         self.camera = pygame.Rect(0,0,width,height)
         self.width = width
+        self.x = 0
+        self.y = 0
         self.height = height
         # utile pour optimiser le blit de la map, blit uniquement la zone de la caméra d'ou le x_min x_max, on blit que entre ces valeurs de x
         self.x_min = 0
@@ -73,8 +80,15 @@ class Camera:
         ##
     def apply(self,entity):
         x_cam = entity[0] + self.camera.x
-        return (x_cam)
+        if (self.x < x_cam< self.x + WIDTH_display):
+            return (True,x_cam)
+        else:
+            return (False,x_cam)
+    def apply_player(self,entity):
+        x_cam = entity[0] + self.camera.x
+        return x_cam    
     def update(self,target):
+<<<<<<< HEAD
         x = -target.rect.x + (WIDTH_display/2)
         y = -target.rect.y + (HEIGTH_display/2)
         x = min(0, x)  #permet de définir la valeur min que x doit avoir, avant que le joueur arrive au centre de l'écran x < 0
@@ -83,6 +97,12 @@ class Camera:
         self.x_max = target.rect.x + WIDTH_display
         ##
         self.camera = pygame.Rect(x,y,self.width,self.height)
+=======
+        self.x = -target.rect.x + (WIDTH_display/2)
+        self.y = -target.rect.y + (HEIGTH_display/2)
+        self.x = min(0, self.x)  # left
+        self.camera = pygame.Rect(self.x,self.y,self.width,self.height)
+>>>>>>> parent of 6c4b50e... Revert "update non fonctionnel"
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):
@@ -180,16 +200,16 @@ class Player(pygame.sprite.Sprite):
 
     def draw_player(self):
         if (self.orientation == "Right"):
-            x_new = camera.apply([self.rect.x])
+            x_new = camera.apply_player([self.rect.x])
             win.blit(mario_up,(x_new,self.rect.y))
         if (self.orientation == "Left"):
-            x_new = camera.apply([self.rect.x])
+            x_new = camera.apply_player([self.rect.x])
             win.blit(mario_left,(x_new,self.rect.y))
         if (self.orientation == "Up"):
-            x_new = camera.apply([self.rect.x])
+            x_new = camera.apply_player([self.rect.x])
             win.blit(mario_up,(x_new,self.rect.y))
         if (self.orientation == "Down"):
-            x_new = camera.apply([self.rect.x])
+            x_new = camera.apply_player([self.rect.x])
             win.blit(mario_up,(x_new,self.rect.y))
 
     def moove(self,keys):
@@ -251,11 +271,11 @@ class Player(pygame.sprite.Sprite):
         return x,y
 
 class Sol(pygame.sprite.Sprite):
-    def __init__(self,x,y,win):
+    def __init__(self,x,y,win,image):
         pygame.sprite.Sprite.__init__(self, sol_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
-        self.image = brick_img
+        self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -265,7 +285,22 @@ class Sol(pygame.sprite.Sprite):
         self.win = win
         self.Afficher()
     def Afficher(self):
-        self.win.blit(brick_img,(self.x,self.y))
+        self.win.blit(self.image,(self.x,self.y))
+class Surprise(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self, sol_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = Block_surprise
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.y = y
+        self.x = x
+        self.win = win
+        self.Afficher()
+    def Afficher(self):
+        self.win.blit(self.image,(self.x,self.y))
 
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
@@ -282,18 +317,34 @@ class Map(pygame.sprite.Sprite):
         global rang
         global ciel
         global brick
+        global terre_herbe_array
+        global terre_array
+        global surprise_array
         self.data = []
         if self.load:
             with open(niveau,"r") as f:
-                First_Load = False
                 for ligne in f:
-                    lenght_ligne = len(ligne)
                     for i in ligne:
                         #if i == "0":
                             #Ciel(rang*TILESIZE,rang_colonne*TILESIZE,win) C'est en train d'être remplacé par le background
                             #ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
+<<<<<<< HEAD
                         if i == "2" or i == "1":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win)
+=======
+                        if i == "1":
+                            Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,brick_img)
+                            brick.append((rang*TILESIZE,rang_colonne*TILESIZE))
+                        if i == "5":
+                            Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre)
+                            terre_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
+                        if i == "6":
+                            Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre_herbe)
+                            terre_herbe_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
+                        if i == "3":
+                            Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
+                            surprise_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
+>>>>>>> parent of 6c4b50e... Revert "update non fonctionnel"
                         rang = rang + 1
                     rang_colonne += 1
                     rang = 0
@@ -301,10 +352,34 @@ class Map(pygame.sprite.Sprite):
             #print(ciel)
             self.load = False
         else:
-            win.blit(background_img, (camera.apply([0]),0))
+            win.blit(background_img, (camera.apply_player([0]),0))
             for sprite in brick:
+<<<<<<< HEAD
                 if not sprite[0] < camera.x_min and not sprite[0] > camera.x_max: # permet de gagner des FPS, prit la zone de caméra
                     win.blit(brick_img,(camera.apply(sprite),sprite[1]))
+=======
+                CanDoIt,x_new = camera.apply(sprite)
+                if (CanDoIt == True):
+                    win.blit(brick_img,(x_new,sprite[1]))              
+            for sprite in terre_herbe_array:
+                CanDoIt,x_new = camera.apply(sprite)
+                if (CanDoIt == True):
+                    win.blit(terre_herbe,(x_new,sprite[1]))    
+            for sprite in terre_array:
+                CanDoIt,x_new = camera.apply(sprite)
+                if (CanDoIt == True):
+                    win.blit(terre,(x_new,sprite[1]))    
+            for sprite in surprise_array:
+                CanDoIt,x_new = camera.apply(sprite)
+                if (CanDoIt == True):
+                    win.blit(Block_surprise,(x_new,sprite[1]))    
+            """for sprite in ciel: Même chose remplacé par le background
+                win.blit(blue_img,(camera.apply(sprite),sprite[1]))
+            """
+
+
+
+>>>>>>> parent of 6c4b50e... Revert "update non fonctionnel"
 
 
 camera = Camera(WIDTH_display,HEIGTH_display)

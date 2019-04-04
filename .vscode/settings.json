@@ -1,7 +1,11 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "python.pythonPath": "C:\\Users\\Robert_Code\\AppData\\Local\\Programs\\Python\\Python37-32\\python.exe"
 =======
     "python.pythonPath": "H:\\ISN\\python.exe"
 >>>>>>> 6c4b50ea30769f360ebf5ef44abef0a88818808b
+=======
+    "python.pythonPath": "H:\\python\\python.exe"
+>>>>>>> parent of 6c4b50e... Revert "update non fonctionnel"
 }

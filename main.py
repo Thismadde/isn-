@@ -51,6 +51,7 @@ sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
 
+
 #def Updating_After_Player(x,y):
 #    map.draw()
 """

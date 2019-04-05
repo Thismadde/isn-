@@ -11,10 +11,10 @@ x = 50
 y = 768-3*64
 width = 50
 height = 60
-vel =4
+vel = 2
 TILESIZE = 64
 
-FPS = 1000
+FPS = 500
 
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
@@ -25,7 +25,9 @@ mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
-background_img = pygame.image.load("data/map/background.png").convert()
+
+background_img = pygame.image.load("data/map/mapclean.png").convert()
+width_fond = background_img.get_width()
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
@@ -76,17 +78,16 @@ class Camera:
         self.height = height
     def apply(self,entity):
         x_cam = entity[0] + self.camera.x
-        if (-self.x - TILESIZE < entity[0]< -self.x + WIDTH_display):
-            return (True,x_cam)
-        else:
-            return (False,x_cam)
+        return (True,x_cam)
     def apply_player(self,entity):
         x_cam = entity[0] + self.camera.x
         return x_cam    
     def update(self,target):
         self.x = -target.rect.x + (WIDTH_display/2)
         self.y = -target.rect.y + (HEIGTH_display/2)
-        self.x = min(0, self.x)  # left
+        self.x = min(0, self.x)
+        if(self.x >width_fond):
+            self.x = width_fond
         self.camera = pygame.Rect(self.x,self.y,self.width,self.height)
 
 class Player(pygame.sprite.Sprite):
@@ -265,9 +266,6 @@ class Sol(pygame.sprite.Sprite):
         self.x = x
         brick.append((self.x,self.y))
         self.win = win
-        self.Afficher()
-    def Afficher(self):
-        self.win.blit(self.image,(self.x,self.y))
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self, sol_sprites)
@@ -280,9 +278,9 @@ class Surprise(pygame.sprite.Sprite):
         self.y = y
         self.x = x
         self.win = win
-        self.Afficher()
-    def Afficher(self):
+    '''def Afficher(self):
         self.win.blit(self.image,(self.x,self.y))
+    '''
 
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
@@ -294,7 +292,7 @@ class Map(pygame.sprite.Sprite):
     #def Camera(self):
 
     def draw(self):
-        win.blit(background_img, (0, 0))
+        win.blit(background_img, (0, -TILESIZE*2))
         global rang_colonne
         global rang
         global ciel
@@ -307,9 +305,6 @@ class Map(pygame.sprite.Sprite):
             with open(niveau,"r") as f:
                 for ligne in f:
                     for i in ligne:
-                        #if i == "0":
-                            #Ciel(rang*TILESIZE,rang_colonne*TILESIZE,win) C'est en train d'être remplacé par le background
-                            #ciel.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "1":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,brick_img)
                             brick.append((rang*TILESIZE,rang_colonne*TILESIZE))
@@ -330,7 +325,7 @@ class Map(pygame.sprite.Sprite):
             self.load = False
         else:
 
-            win.blit(background_img, (camera.apply_player([0]),0))
+            win.blit(background_img, (camera.apply_player([0]),-64*2))
             '''
             for sprite in brick:
                 win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
@@ -342,7 +337,7 @@ class Map(pygame.sprite.Sprite):
                 win.blit(Block_surprise,(camera.apply(sprite[0]),sprite[1]))    
             '''
             
-            for sprite in brick:
+            '''for sprite in brick:
                 CanDoIt,x_new = camera.apply(sprite)
                 if (CanDoIt == True):
                     win.blit(brick_img,(x_new,sprite[1]))              
@@ -357,7 +352,8 @@ class Map(pygame.sprite.Sprite):
             for sprite in surprise_array:
                 CanDoIt,x_new = camera.apply(sprite)
                 if (CanDoIt == True):
-                    win.blit(Block_surprise,(x_new,sprite[1]))    
+                    win.blit(Block_surprise,(x_new,sprite[1]))   
+            '''
 
 
 camera = Camera(WIDTH_display,HEIGTH_display)

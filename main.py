@@ -25,11 +25,8 @@ mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
-<<<<<<< HEAD
-=======
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 goomba_img = pygame.transform.scale(goomba_img, (50,50))
->>>>>>> 62fc94aad9cd61f720774e9d404a2d7b06c87a4d
 
 background_img = pygame.image.load("data/map/mapclean.png").convert()
 width_fond = background_img.get_width()

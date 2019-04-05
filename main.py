@@ -26,8 +26,6 @@ mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
 background_img = pygame.image.load("data/map/background.png").convert()
-goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
-goomba_img = pygame.transform.scale(goomba_img, (50,50))
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()

@@ -30,6 +30,7 @@ goomba_img = pygame.transform.scale(goomba_img, (50,50))
 
 background_img = pygame.image.load("data/map/mapclean.png").convert()
 width_fond = background_img.get_width()
+print(width_fond)
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
@@ -88,8 +89,8 @@ class Camera:
         self.x = -target.rect.x + (WIDTH_display/2)
         self.y = -target.rect.y + (HEIGTH_display/2)
         self.x = min(0, self.x)
-        if(self.x >width_fond):
-            self.x = width_fond
+        if(self.x < -width_fond + WIDTH_display):
+            self.x = -width_fond + WIDTH_display
         self.camera = pygame.Rect(self.x,self.y,self.width,self.height)
 
 class Player(pygame.sprite.Sprite):

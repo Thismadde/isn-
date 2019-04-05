@@ -1,6 +1,7 @@
 import pygame
 import time
 pygame.init()
+from PIL import Image, ImageDraw, ImageFont
 
 
 
@@ -25,6 +26,8 @@ mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
+mario_vie = pygame.image.load("data/sprites/tete mario.png")
+mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 goomba_img = pygame.transform.scale(goomba_img, (50,50))
 
@@ -390,6 +393,11 @@ USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
+font = ImageFont.truetype('Roboto-Bold.ttf', size=4)
+def draw_vie():
+    pygame.draw.rect(win,RED,[0,0,150,50],2)
+    win.blit(mario_vie,(2,5))
+    draw.text((42,35/2), "x"+self.vies, font=font )
 while run:
     clock = pygame.time.Clock()
     milliseconds = clock.tick(FPS)
@@ -415,7 +423,12 @@ while run:
     win.blit(blue_img,(0,0))
     win.blit(blue_img,(TILESIZE,0))
     win.blit(fps_label,fps_rect)
+    draw_vie()
     #Fin du compteur
 
     pygame.display.update()
+
+    
+     
+
 pygame.quit()

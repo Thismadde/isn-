@@ -108,6 +108,17 @@ class Player(pygame.sprite.Sprite):
         self.isCollinding = True
         self.isJumping = False
         self.jumpCount = 10
+        self.lives = 3
+        self.health = 1
+
+    def lives(self):
+        if self.health == 0:
+            self.lives -=  1
+            map.draw()
+            self.rect.x = 50
+            self.rect.y = 768-3*64
+            camera.update(player)
+            self.health = 1
 
     def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10

@@ -108,12 +108,12 @@ class Player(pygame.sprite.Sprite):
         self.isCollinding = True
         self.isJumping = False
         self.jumpCount = 10
-        self.lives = 3
+        self.vies = 3
         self.health = 1
 
     def lives(self):
         if self.health == 0:
-            self.lives -=  1
+            self.vies -=  1
             map.draw()
             self.rect.x = 50
             self.rect.y = 768-3*64

@@ -29,7 +29,7 @@ mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 goomba_img = pygame.transform.scale(goomba_img, (50,50))
 coin_img = pygame.image.load("data/sprites/coin-64.png").convert_alpha()
-coin_img = pygame.transform.scale(coin_img, (40,40))
+coin_img = pygame.transform.scale(coin_img, (30,30))
 background_img = pygame.image.load("data/map/mapclean.png").convert()
 width_fond = background_img.get_width()
 print(width_fond)
@@ -59,6 +59,7 @@ terre_array = []
 surprise_array = []
 
 all_sprites = pygame.sprite.Group()
+coin_sprites = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
@@ -79,20 +80,19 @@ myfont = pygame.font.SysFont("monospace",30)
 """
 
 class coin(pygame.sprite.Sprite):
-    def __init__(self,x,y,win,image):
-        pygame.sprite.Sprite.__init__(self, coin_img)
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,coin_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
-        self.image = image
+        self.image = coin_img
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.y = y
         self.x = x
-        coin.append((self.x,self.y))
-        self.win = win    
-
-
+        self.win = win
+    def Afficher(self):
+        self.win.blit(self.image,(self.x,self.y))
 
 class Camera:
     def __init__(self,width,height):
@@ -134,10 +134,10 @@ class Player(pygame.sprite.Sprite):
         self.vies = 3
         self.health = 1
         self.pieces = 0
-
-    def pickup ()
-        if player.collision_with_coin():
-             player.pieces += 1
+        
+    def pickup(self):
+        if player.collision_with_coin() == True:
+            player.pieces += 1
 
     def lives(self):
         if self.health == 0:
@@ -149,11 +149,17 @@ class Player(pygame.sprite.Sprite):
             self.health = 1
         if self.pieces == 100:
             self.vies += 1
+            self.pîeces = 0
 
     def updatelives(self):
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.vies),3,RED)
         win.blit(textfont,(400,5))
+
+    def updatecoin(self):
+        win.blit(coin_img,(260,5))
+        textfont = myfont.render("X"+str(self.pieces),3,RED)
+        win.blit(textfont,(295,5))
 
     def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10
@@ -231,39 +237,28 @@ class Player(pygame.sprite.Sprite):
     def collision_with_coin(self):
         if self.orientation == "Right":
             self.rect.x += vel
-            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
             if not(coin_hit_list == []):
-                self.rect.x -= vel*2
                 return True
             else:
-                self.rect.x -= vel
                 return False
         if self.orientation == "Left":
-            self.rect.x -= vel
-            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
             if not(coin_hit_list == []):
-                self.rect.x += vel*2
                 return True
             else:
-                self.rect.x += vel
                 return False
         if self.orientation == "Down":
-            self.rect.y += vel
-            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
             if not(coin_hit_list == []):
-                self.rect.y -= vel*2
                 return True
             else:
-                self.rect.y -= vel
                 return False
         if self.orientation == "Up":
-            self.rect.y -= vel
-            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
             if not(coin_hit_list == []):
-                self.rect.y += vel*2
                 return True
             else:
-                self.rect.y += vel
                 return False
 
     def draw_player(self):
@@ -495,6 +490,7 @@ while run:
     #draw_vie()
     #Fin du compteur
     player.updatelives()
+    player.updatecoin()
     pygame.display.update()
 
     

@@ -130,8 +130,13 @@ class Player(pygame.sprite.Sprite):
             self.health = 1
     def updatelives(self):
         win.blit(mario_vie,(360,5))
+<<<<<<< HEAD
         textfont = myfont.render("X"+str(self.vies),3,RED)
         win.blit(textfont,(400,5))      
+=======
+        textfont = myfont.render("X"+str(self.vies),20,RED)
+        win.blit(textfont,(400,5))
+>>>>>>> a5d3507af260987894518d03d83c4aff9609b945
     def gravity(self):
         dx = 0
         self.collision_with_ground = False
@@ -216,9 +221,16 @@ class Player(pygame.sprite.Sprite):
         if (self.orientation == "Down"):
             x_new = camera.apply_player([self.rect.x])
             win.blit(mario_up,(x_new,self.rect.y))
+<<<<<<< HEAD
       
     def moove(self,keys):     
         if(self.gravity()):
+=======
+
+    def moove(self,keys):
+        #self.isCollindingWithGround()
+        #if(self.gravity()):
+>>>>>>> a5d3507af260987894518d03d83c4aff9609b945
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
@@ -348,6 +360,7 @@ class Map(pygame.sprite.Sprite):
         else:
 
             win.blit(background_img, (camera.apply_player([0]),-64*2))
+            player.updatelives()
             '''
             for sprite in brick:
                 win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
@@ -431,7 +444,6 @@ while run:
     win.blit(fps_label,fps_rect)
     #draw_vie()
     #Fin du compteur
-    player.updatelives()
     pygame.display.update()
 
     

@@ -60,6 +60,7 @@ surprise_array = []
 
 all_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
+goomba_sprites = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
@@ -78,7 +79,21 @@ myfont = pygame.font.SysFont("monospace",30)
             if(x_ancien+(i*TILESIZE),y_ancien+z*TILESIZE) in ciel:
                 win.blit(blue_img,((x_ancien+i*TILESIZE),y_ancien+z*TILESIZE))
 """
-
+class goomba(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,goomba_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = goomba_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.y = y
+        self.x = x
+        self.win = win
+    def Afficher(self):
+        self.win.blit(self.image,(self.x,self.y))
+        
 class coin(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self,coin_sprites)
@@ -243,18 +258,21 @@ class Player(pygame.sprite.Sprite):
             else:
                 return False
         if self.orientation == "Left":
+            self.rect.x -= vel
             coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
             if not(coin_hit_list == []):
                 return True
             else:
                 return False
         if self.orientation == "Down":
+            self.rect.y += vel
             coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
             if not(coin_hit_list == []):
                 return True
             else:
                 return False
         if self.orientation == "Up":
+            self.rect.y -= vel
             coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
             if not(coin_hit_list == []):
                 return True

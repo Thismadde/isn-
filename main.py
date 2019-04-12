@@ -115,12 +115,7 @@ class Player(pygame.sprite.Sprite):
         self.jumpCount = 10
         self.vies = 3
         self.health = 100
-<<<<<<< HEAD
-        self.updatelives()
-
-=======
         self.collision_with_ground = False
->>>>>>> 1d61ccc4ca06d4357f8f5e18beb069e2d738dccb
     def lives(self):
         if self.health == 0:
             self.vies -=  1
@@ -211,7 +206,7 @@ class Player(pygame.sprite.Sprite):
 
     def moove(self,keys):
         #self.isCollindingWithGround()
-        if(self.gravity()):
+        #if(self.gravity()):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():

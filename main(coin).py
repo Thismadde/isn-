@@ -28,7 +28,8 @@ mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 goomba_img = pygame.transform.scale(goomba_img, (50,50))
-
+coin_img = pygame.image.load("data/sprites/coin-64.png").convert_alpha()
+coin_img = pygame.transform.scale(coin_img, (40,40))
 background_img = pygame.image.load("data/map/mapclean.png").convert()
 width_fond = background_img.get_width()
 print(width_fond)
@@ -76,6 +77,23 @@ myfont = pygame.font.SysFont("monospace",30)
             if(x_ancien+(i*TILESIZE),y_ancien+z*TILESIZE) in ciel:
                 win.blit(blue_img,((x_ancien+i*TILESIZE),y_ancien+z*TILESIZE))
 """
+
+class coin(pygame.sprite.Sprite):
+    def __init__(self,x,y,win,image):
+        pygame.sprite.Sprite.__init__(self, coin_img)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.y = y
+        self.x = x
+        coin.append((self.x,self.y))
+        self.win = win    
+
+
+
 class Camera:
     def __init__(self,width,height):
         self.camera = pygame.Rect(0,0,width,height)
@@ -114,8 +132,13 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 10
         self.vies = 3
-        self.health = 100
-        self.collision_with_ground = False
+        self.health = 1
+        self.pieces = 0
+
+    def pickup ()
+        if player.collision_with_coin():
+             player.pieces += 1
+
     def lives(self):
         if self.health == 0:
             self.vies -=  1
@@ -124,21 +147,38 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = 768-3*64
             camera.update(player)
             self.health = 1
+        if self.pieces == 100:
+            self.vies += 1
+
     def updatelives(self):
-        textfont = myfont.render(str(self.vies),1,RED)
-        win.blit(textfont,(400,10))
-    def gravity(self):
-        self.collision_with_ground = False
-        while not self.collision_with_ground:
-            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-            if not(blocks_hit_list == []):
-                self.collision_with_ground = True
-                return True
-            else:
-                self.rect.y += vel * 0.1
-                self.collision_with_ground = False
-                player.draw_player()
-                   
+        win.blit(mario_vie,(360,5))
+        textfont = myfont.render("X"+str(self.vies),3,RED)
+        win.blit(textfont,(400,5))
+
+    def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
+        self.rect.y += 10
+        blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+        self.rect.y -= 10
+        if not(blocks_hit_list == []):
+            self.isCollinding = True
+            return True
+        else:
+            self.isCollinding = False
+            while not self.isCollinding:
+                self.rect.y += 10
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                self.rect.y -= 10
+                if (blocks_hit_list == []):
+                    self.rect.y += self.Vgravite
+                    print(self.rect.y)
+                    self.orientation = "Down"
+                    self.draw_player()
+                else:
+                    self.isCollinding = True
+                    print("False")
+                    return True         
+                time.sleep(0.01)   
+                    
     def collision_while_jumping(self,negative):
         if(self.isJumping):
             self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
@@ -188,6 +228,43 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y += vel
                 return False
 
+    def collision_with_coin(self):
+        if self.orientation == "Right":
+            self.rect.x += vel
+            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(coin_hit_list == []):
+                self.rect.x -= vel*2
+                return True
+            else:
+                self.rect.x -= vel
+                return False
+        if self.orientation == "Left":
+            self.rect.x -= vel
+            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(coin_hit_list == []):
+                self.rect.x += vel*2
+                return True
+            else:
+                self.rect.x += vel
+                return False
+        if self.orientation == "Down":
+            self.rect.y += vel
+            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(coin_hit_list == []):
+                self.rect.y -= vel*2
+                return True
+            else:
+                self.rect.y -= vel
+                return False
+        if self.orientation == "Up":
+            self.rect.y -= vel
+            coin_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(coin_hit_list == []):
+                self.rect.y += vel*2
+                return True
+            else:
+                self.rect.y += vel
+                return False
 
     def draw_player(self):
         if (self.orientation == "Right"):
@@ -205,62 +282,61 @@ class Player(pygame.sprite.Sprite):
 
     def moove(self,keys):
         #self.isCollindingWithGround()
-        if(self.gravity()):
-            if keys[pygame.K_LEFT]:
-                self.orientation = "Left"
-                if not(self.x - vel<0) and not self.collision_with_walls():
+        if keys[pygame.K_LEFT]:
+            self.orientation = "Left"
+            if not(self.x - vel<0) and not self.collision_with_walls():
+                map.draw()
+                self.rect.x -= vel
+                camera.update(player)
+                self.draw_player()
+        if keys[pygame.K_RIGHT]:
+            self.orientation = "Right"
+            if not self.collision_with_walls():
+                map.draw()
+                self.rect.x += vel
+                camera.update(player)
+                self.draw_player()
+        if not (self.isJumping):
+            if keys[pygame.K_DOWN]:
+                self.orientation = "Down"
+                if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                     map.draw()
-                    self.rect.x -= vel
+                    self.rect.y += vel
                     camera.update(player)
                     self.draw_player()
-            if keys[pygame.K_RIGHT]:
-                self.orientation = "Right"
-                if not self.collision_with_walls():
+            if keys[pygame.K_UP]:
+                self.orientation = "Up"
+                if not ((self.y-vel)<0)and not self.collision_with_walls():
                     map.draw()
-                    self.rect.x += vel
+                    self.rect.y -= vel
                     camera.update(player)
                     self.draw_player()
-            if not (self.isJumping):
-                if keys[pygame.K_DOWN]:
+            #self.draw_player()
+            #if keys[pygame.K_SPACE]:
+            #   self.isJumping = True
+        """if (self.isJumping): Fonction de saut a ameliorer
+            if self.jumpCount >= -10:
+                negative = 1
+                self.orientation = "Up"
+                if self.jumpCount < 1:
                     self.orientation = "Down"
-                    if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                        map.draw()
-                        self.rect.y += vel
-                        camera.update(player)
-                        self.draw_player()
-                if keys[pygame.K_UP]:
-                    self.orientation = "Up"
-                    if not ((self.y-vel)<0)and not self.collision_with_walls():
-                        map.draw()
-                        self.rect.y -= vel
-                        camera.update(player)
-                        self.draw_player()
-                #self.draw_player()
-                #if keys[pygame.K_SPACE]:
-                #   self.isJumping = True
-            """if (self.isJumping): Fonction de saut a ameliorer
-                if self.jumpCount >= -10:
-                    negative = 1
-                    self.orientation = "Up"
-                    if self.jumpCount < 1:
-                        self.orientation = "Down"
-                        negative = -1
-                    if not self.collision_while_jumping(negative):
-                    #if not ((y - jumpCount ** 2 * 0.1) < 0):
-                    # y -= jumpCount*0.01 * 2 * 0.5
-                        Updating_After_Player(self.rect.x,self.rect.y)
-                        self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
-                        self.draw_player()
-                        self.jumpCount -= 1
-                    #print("Jump " + str(jumpCount))
-                    #else :
-                    #   jumpCount = 10
-                    #  isJumping = False
-                else:
-                    self.isJumping = False
-                    self.jumpCount = 10
-                """
-            return x,y
+                    negative = -1
+                if not self.collision_while_jumping(negative):
+                #if not ((y - jumpCount ** 2 * 0.1) < 0):
+                # y -= jumpCount*0.01 * 2 * 0.5
+                    Updating_After_Player(self.rect.x,self.rect.y)
+                    self.rect.y -= self.jumpCount ** 2 * 0.5 * negative
+                    self.draw_player()
+                    self.jumpCount -= 1
+                #print("Jump " + str(jumpCount))
+                #else :
+                #   jumpCount = 10
+                #  isJumping = False
+            else:
+                self.isJumping = False
+                self.jumpCount = 10
+            """
+        return x,y
 
 class Sol(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):

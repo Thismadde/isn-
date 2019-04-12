@@ -59,6 +59,7 @@ terre_array = []
 surprise_array = []
 
 all_sprites = pygame.sprite.Group()
+coin_sprites = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
@@ -79,20 +80,19 @@ myfont = pygame.font.SysFont("monospace",30)
 """
 
 class coin(pygame.sprite.Sprite):
-    def __init__(self,x,y,win,image):
-        pygame.sprite.Sprite.__init__(self, coin_img)
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,coin_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
-        self.image = image
+        self.image = coin_img
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.y = y
         self.x = x
-        coin.append((self.x,self.y))
-        self.win = win    
-
-
+        self.win = win
+    def Afficher(self):
+        self.win.blit(self.image,(self.x,self.y))
 
 class Camera:
     def __init__(self,width,height):
@@ -134,8 +134,8 @@ class Player(pygame.sprite.Sprite):
         self.vies = 3
         self.health = 1
         self.pieces = 0
-
-    def pickup ()
+        
+    def pickup():
         if player.collision_with_coin():
             player.pieces += 1
 

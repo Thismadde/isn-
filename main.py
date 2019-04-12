@@ -125,8 +125,9 @@ class Player(pygame.sprite.Sprite):
             camera.update(player)
             self.health = 1
     def updatelives(self):
-        textfont = myfont.render(str(self.vies),1,RED)
-        win.blit(textfont,(400,10))
+        win.blit(mario_vie,(360,5))
+        textfont = myfont.render("X"+str(self.vies),3,RED)
+        win.blit(textfont,(400,5))
     def gravity(self):
         self.collision_with_ground = False
         while not self.collision_with_ground:

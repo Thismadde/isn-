@@ -62,7 +62,7 @@ sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
 ''' FONT SYSTEM : '''
-myfont = pygame.font.SysFont("monospace",15)
+myfont = pygame.font.SysFont("monospace",30)
 ''''''''''''''''''''
 
 
@@ -125,8 +125,9 @@ class Player(pygame.sprite.Sprite):
             camera.update(player)
             self.health = 1
     def updatelives(self):
-        textfont = myfont.render(str(self.vies),1,RED)
-        win.blit(textfont,(400,10))
+        win.blit(mario_vie,(360,5))
+        textfont = myfont.render("X"+str(self.vies),3,RED)
+        win.blit(textfont,(400,5))
 
     def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10

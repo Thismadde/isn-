@@ -137,7 +137,7 @@ class Player(pygame.sprite.Sprite):
 
     def pickup ()
         if player.collision_with_coin():
-             player.pieces += 1
+            player.pieces += 1
 
     def lives(self):
         if self.health == 0:

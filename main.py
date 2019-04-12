@@ -1,3 +1,7 @@
+""""""""""""""""""""""""" FONCTION DE SAUT EN COURS, GRAVITE FONCTIONNEL ??''''''''''''''''''''
+"""""""""""""""""""""""""
+
+
 import pygame
 import time
 pygame.init()
@@ -115,7 +119,7 @@ class Player(pygame.sprite.Sprite):
         self.jumpCount = 10
         self.vies = 3
         self.health = 100
-        self.collision_with_ground = False
+        self.collision_with_ground = True
     def lives(self):
         if self.health == 0:
             self.vies -=  1
@@ -127,18 +131,27 @@ class Player(pygame.sprite.Sprite):
     def updatelives(self):
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.vies),3,RED)
-        win.blit(textfont,(400,5))
+        win.blit(textfont,(400,5))      
     def gravity(self):
+        dx = 0
         self.collision_with_ground = False
         while not self.collision_with_ground:
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 self.collision_with_ground = True
-                return True
-            else:
-                self.rect.y += vel * 0.1
-                self.collision_with_ground = False
+                self.rect.y -= 1
+                map.draw()
                 player.draw_player()
+                return True 
+            else:
+                self.rect.y += 1
+                dx += 1 
+                self.collision_with_ground = False   
+                if (dx > 20):
+                    map.draw()
+                    player.draw_player()
+
+                
                    
     def collision_while_jumping(self,negative):
         if(self.isJumping):
@@ -203,9 +216,8 @@ class Player(pygame.sprite.Sprite):
         if (self.orientation == "Down"):
             x_new = camera.apply_player([self.rect.x])
             win.blit(mario_up,(x_new,self.rect.y))
-
-    def moove(self,keys):
-        #self.isCollindingWithGround()
+      
+    def moove(self,keys):     
         if(self.gravity()):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
@@ -410,7 +422,7 @@ while run:
             fps_all += timer.get_fps()
             number += 1
             fps_rect = fps_label.get_rect()
-    keys = pygame.key.get_pressed()
+    keys = pygame.key.get_pressed() 
     player.moove(keys)
     #Compteur de FPS :
     dt = timer.tick() / 1000

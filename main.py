@@ -1,8 +1,6 @@
 import pygame
 import time
 pygame.init()
-from PIL import Image, ImageDraw, ImageFont
-
 
 
 
@@ -63,6 +61,9 @@ all_sprites = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 
+''' FONT SYSTEM : '''
+myfont = pygame.font.SysFont("monospace",15)
+''''''''''''''''''''
 
 
 #def Updating_After_Player(x,y):
@@ -113,7 +114,7 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 10
         self.vies = 3
-        self.health = 1
+        self.health = 100
 
     def lives(self):
         if self.health == 0:
@@ -123,6 +124,9 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = 768-3*64
             camera.update(player)
             self.health = 1
+    def updatelives(self):
+        textfont = myfont.render(str(self.vies),1,RED)
+        win.blit(textfont,(400,10))
 
     def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
         self.rect.y += 10
@@ -393,11 +397,12 @@ USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
-font = ImageFont.truetype('Roboto-Bold.ttf', size=4)
-def draw_vie():
+#font = ImageFont.truetype('Roboto-Bold.ttf', size=4)
+'''def draw_vie():
     pygame.draw.rect(win,RED,[0,0,150,50],2)
     win.blit(mario_vie,(2,5))
     draw.text((42,35/2), "x"+self.vies, font=font )
+'''
 while run:
     clock = pygame.time.Clock()
     milliseconds = clock.tick(FPS)
@@ -423,9 +428,9 @@ while run:
     win.blit(blue_img,(0,0))
     win.blit(blue_img,(TILESIZE,0))
     win.blit(fps_label,fps_rect)
-    draw_vie()
+    #draw_vie()
     #Fin du compteur
-
+    player.updatelives()
     pygame.display.update()
 
     

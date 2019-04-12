@@ -115,6 +115,7 @@ class Player(pygame.sprite.Sprite):
         self.jumpCount = 10
         self.vies = 3
         self.health = 100
+        self.updatelives()
 
     def lives(self):
         if self.health == 0:
@@ -126,7 +127,7 @@ class Player(pygame.sprite.Sprite):
             self.health = 1
     def updatelives(self):
         win.blit(mario_vie,(360,5))
-        textfont = myfont.render("X"+str(self.vies),3,RED)
+        textfont = myfont.render("X"+str(self.vies),20,RED)
         win.blit(textfont,(400,5))
 
     def isCollindingWithGround(self): #Fonction pour vérifier si touche le sol , marche pas vraiment pour l'instant
@@ -348,6 +349,7 @@ class Map(pygame.sprite.Sprite):
         else:
 
             win.blit(background_img, (camera.apply_player([0]),-64*2))
+            player.updatelives()
             '''
             for sprite in brick:
                 win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
@@ -431,7 +433,6 @@ while run:
     win.blit(fps_label,fps_rect)
     #draw_vie()
     #Fin du compteur
-    player.updatelives()
     pygame.display.update()
 
     

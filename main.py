@@ -10,7 +10,7 @@ x = 50
 y = 768-6*64
 width = 50
 height = 60
-vel = 2
+vel = 3
 TILESIZE = 64
 
 FPS = 500
@@ -109,6 +109,15 @@ class Player(pygame.sprite.Sprite):
         if self.health == 0:
             self.vies -=  1
             map.draw()
+            player.draw_player()
+            self.rect.x = 50
+            self.rect.y = 768-3*64
+            camera.update(player)
+            self.health = 1
+        if self.rect.y >=768:
+            self.vies -=  1
+            map.draw()
+            player.draw_player()
             self.rect.x = 50
             self.rect.y = 768-3*64
             camera.update(player)
@@ -121,11 +130,11 @@ class Player(pygame.sprite.Sprite):
         refresh = 0
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            self.rect.y += 2
+            self.rect.y += 3
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 self.collision_with_ground = True
-                self.rect.y -= 2
+                self.rect.y -= 3
                 return True 
             else:
                 map.draw()
@@ -186,17 +195,17 @@ class Player(pygame.sprite.Sprite):
             win.blit(mario_up,(x_new,self.rect.y))
     def jump(self):
         print(self.jumpCount)
-        if self.jumpCount >= -50:
+        if self.jumpCount >= -65:
             neg = 1
             if self.jumpCount < 0:
                 neg = -1
-            self.rect.y -= self.jumpCount**2 * 0.005 * neg
+            self.rect.y -= self.jumpCount**2 * 0.004 * neg
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             self.jumpCount -= 1
             if not (blocks_hit_list == []):
                 self.jumpCount = 50
                 self.isJumping = False
-                self.rect.y += self.jumpCount**2 * 0.005 * neg
+                self.rect.y += self.jumpCount**2 * 0.01 * neg
         else:
             self.isJumping = False
             self.jumpCount = 50
@@ -210,7 +219,7 @@ class Player(pygame.sprite.Sprite):
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     map.draw()
-                    self.rect.x -= vel
+                    self.rect.x -= vel +2
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:

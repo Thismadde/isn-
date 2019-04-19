@@ -104,7 +104,7 @@ class Player(pygame.sprite.Sprite):
         self.isCollinding = True
         self.isJumping = False
         self.jumpCount = 50
-        self.vies = 1
+        self.vies = 3
         self.health = 100
         self.collision_with_ground = True
     def lives(self):
@@ -384,7 +384,12 @@ number = 0
 while run:
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
-        
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                position = event.pos
+                if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
+                    GameOverMenu = False  
+                    player.vies = 3
     else:
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)
@@ -395,6 +400,8 @@ while run:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     player.isJumping = True
+                if event.key == pygame.K_F1:
+                    print('a')
             #Compteur de FPS
             elif event.type == USEREVENT:
                 fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)

@@ -15,6 +15,7 @@ TILESIZE = 64
 
 FPS = 500
 
+GameOverMenu = False
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
 pygame.display.set_caption("Super Mario Bross")
@@ -28,10 +29,11 @@ mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 goomba_img = pygame.transform.scale(goomba_img, (50,50))
+game_over = pygame.image.load("data/gameover/GameOver.png").convert()
+
 
 background_img = pygame.image.load("data/map/mapclean.png").convert()
 width_fond = background_img.get_width()
-print(width_fond)
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
@@ -122,6 +124,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = 768-3*64
             camera.update(player)
             self.health = 1
+        if self.vies == 0:
+            global GameOverMenu
+            GameOverMenu = True
+
     def updatelives(self):
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.vies),3,RED)
@@ -376,30 +382,34 @@ pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
-    clock = pygame.time.Clock()
-    milliseconds = clock.tick(FPS)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-            print("Moyenne des FPS :" + str(fps_all/number))
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                player.isJumping = True
-        #Compteur de FPS
-        elif event.type == USEREVENT:
-            fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
-            fps_all += timer.get_fps()
-            number += 1
-            fps_rect = fps_label.get_rect()
-    keys = pygame.key.get_pressed() 
-    player.moove(keys)
-    player.lives()
-    #Compteur de FPS :
-    dt = timer.tick() / 1000
-    win.blit(blue_img,(0,0))
-    win.blit(blue_img,(TILESIZE,0))
-    win.blit(fps_label,fps_rect)
-    #Fin du compteur
+    if GameOverMenu == True:
+        win.blit(game_over,(0,0))
+        
+    else:
+        clock = pygame.time.Clock()
+        milliseconds = clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                print("Moyenne des FPS :" + str(fps_all/number))
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    player.isJumping = True
+            #Compteur de FPS
+            elif event.type == USEREVENT:
+                fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
+                fps_all += timer.get_fps()
+                number += 1
+                fps_rect = fps_label.get_rect()
+        keys = pygame.key.get_pressed() 
+        player.moove(keys)
+        player.lives()
+        #Compteur de FPS :
+        dt = timer.tick() / 1000
+        win.blit(blue_img,(0,0))
+        win.blit(blue_img,(TILESIZE,0))
+        win.blit(fps_label,fps_rect)
+        #Fin du compteur   
     pygame.display.update()
 
     

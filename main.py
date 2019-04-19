@@ -10,7 +10,7 @@ x = 50
 y = 768-6*64
 width = 50
 height = 60
-vel = 3
+vel = 2
 TILESIZE = 64
 
 FPS = 500
@@ -127,7 +127,6 @@ class Player(pygame.sprite.Sprite):
         textfont = myfont.render("X"+str(self.vies),3,RED)
         win.blit(textfont,(400,5))      
     def gravity(self):
-        refresh = 0
         self.collision_with_ground = False
         if not self.collision_with_ground:
             self.rect.y += 3
@@ -143,13 +142,13 @@ class Player(pygame.sprite.Sprite):
 
     def collision_with_walls(self):
         if self.orientation == "Right":
-            #self.rect.x += vel
+            self.rect.x += vel
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
-                self.rect.x -= vel
+                self.rect.x -= vel*2
                 return True
             else:
-                #self.rect.x -= vel
+                self.rect.x -= vel
                 return False
         if self.orientation == "Left":
             self.rect.x -= vel
@@ -194,18 +193,12 @@ class Player(pygame.sprite.Sprite):
             x_new = camera.apply_player([self.rect.x])
             win.blit(mario_up,(x_new,self.rect.y))
     def jump(self):
-        print(self.jumpCount)
-        if self.jumpCount >= -65:
-            neg = 1
-            if self.jumpCount < 0:
-                neg = -1
-            self.rect.y -= self.jumpCount**2 * 0.004 * neg
+        if 0<= self.jumpCount <=50:
+            self.rect.y -= self.jumpCount**2 * 0.004
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-            self.jumpCount -= 1
-            if not (blocks_hit_list == []):
-                self.jumpCount = 50
+            if not(blocks_hit_list == []):
                 self.isJumping = False
-                self.rect.y += self.jumpCount**2 * 0.01 * neg
+            self.jumpCount -= 1
         else:
             self.isJumping = False
             self.jumpCount = 50
@@ -219,7 +212,7 @@ class Player(pygame.sprite.Sprite):
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     map.draw()
-                    self.rect.x -= vel +2
+                    self.rect.x -= vel
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:
@@ -230,7 +223,7 @@ class Player(pygame.sprite.Sprite):
                     camera.update(player)
                     self.draw_player()
 
-        if(not self.isJumping):
+        else:
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():

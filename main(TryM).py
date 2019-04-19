@@ -220,6 +220,18 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y += (self.jumpCount ** 2 * 0.5 * negative)
                 return False
 
+    def collision_with_goomba (self):
+        
+        self.rect.x += vel
+        goomba_hit_list = pygame.sprite.spritecollide(self,goomba_sprites,False)
+        if not(goomba_hit_list == []):
+            self.rect.x -= vel*2
+            return True
+        else:
+            self.rect.x -= vel
+            return False
+    
+        
     def collision_with_walls(self):
         if self.orientation == "Right":
             self.rect.x += vel

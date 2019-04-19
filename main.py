@@ -104,7 +104,7 @@ class Player(pygame.sprite.Sprite):
         self.isCollinding = True
         self.isJumping = False
         self.jumpCount = 50
-        self.vies = 3
+        self.vies = 1
         self.health = 100
         self.collision_with_ground = True
     def lives(self):

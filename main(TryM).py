@@ -90,9 +90,18 @@ class goomba(pygame.sprite.Sprite):
         self.rect.y = y
         self.y = y
         self.x = x
-        self.win = win
+        self.Vgravite = 1
+        self.orientation = "Right"
+        self.canCollind = True
+        self.health = 1
     def Afficher(self):
         self.win.blit(self.image,(self.x,self.y))
+        
+    def lives(self):
+        if self.health == 0:
+            map.draw()
+            self.canCollind = False
+        
         
 class coin(pygame.sprite.Sprite):
     def __init__(self,x,y,win):

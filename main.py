@@ -393,6 +393,7 @@ while run:
             fps_rect = fps_label.get_rect()
     keys = pygame.key.get_pressed() 
     player.moove(keys)
+    player.lives()
     #Compteur de FPS :
     dt = timer.tick() / 1000
     win.blit(blue_img,(0,0))

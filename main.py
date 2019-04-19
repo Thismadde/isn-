@@ -134,7 +134,6 @@ class Player(pygame.sprite.Sprite):
             if not(blocks_hit_list == []):
                 self.collision_with_ground = True
                 self.rect.y -= 3
-                return True 
             else:
                 map.draw()
                 player.draw_player()
@@ -197,7 +196,9 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= self.jumpCount**2 * 0.004
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
+                self.rect.y += self.jumpCount**2 * 0.004
                 self.isJumping = False
+                self.jumpCount = 50
             self.jumpCount -= 1
         else:
             self.isJumping = False
@@ -222,8 +223,8 @@ class Player(pygame.sprite.Sprite):
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
-
         else:
+            self.gravity()
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
@@ -238,16 +239,17 @@ class Player(pygame.sprite.Sprite):
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
-            if ((not self.isJumping) and (self.gravity())):
+            if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         map.draw()
                         self.rect.y += vel
                         camera.update(player)
-                        self.draw_player()
+                        self.draw_player()     
                 if keys[pygame.K_UP]:
-                    self.isJumping = True
+                    if self.collision_with_ground:
+                        self.isJumping = True
             return x,y
 
 class Sol(pygame.sprite.Sprite):

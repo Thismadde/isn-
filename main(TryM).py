@@ -93,13 +93,9 @@ class goomba(pygame.sprite.Sprite):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         print(blocks_hit_list)
         if (not (blocks_hit_list == [])) and (player.rect.y <= (self.rect.y)):
-            self.health -= 1
-            player.score += 500
-    def lives(self):
-        if self.health == 0:
-            map.draw()
             self.exist = False
-            goomba_sprites.remove(self)
+            player.score += 500
+            goomba_sprites.remove(self)          
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
@@ -338,10 +334,11 @@ class Coin(pygame.sprite.Sprite):
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collision()
     def collision(self):
-        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,True)
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if not (blocks_hit_list == []):
             self.exist = False
             player.score += 100
+            coin_sprites.remove(self)
 
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -489,7 +486,6 @@ while run:
         keys = pygame.key.get_pressed() 
         player.moove(keys)
         player.lives()
-        goomba1.lives()
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(blue_img,(0,0))

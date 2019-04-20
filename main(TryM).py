@@ -224,7 +224,7 @@ class Player(pygame.sprite.Sprite):
         
         self.rect.x += vel
         goomba_hit_list = pygame.sprite.spritecollide(self,goomba_sprites,False)
-        if not(goomba_hit_list == []):
+        if goomba.canCollid == True and not goomba_hit_list == []:
             self.rect.x -= vel*2
             return True
         else:
@@ -268,36 +268,6 @@ class Player(pygame.sprite.Sprite):
                 return True
             else:
                 self.rect.y += vel
-                return False
-
-    def collision_with_coin(self):
-        if self.orientation == "Right":
-            self.rect.x += vel
-            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
-            if not(coin_hit_list == []):
-                return True
-            else:
-                return False
-        if self.orientation == "Left":
-            self.rect.x -= vel
-            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
-            if not(coin_hit_list == []):
-                return True
-            else:
-                return False
-        if self.orientation == "Down":
-            self.rect.y += vel
-            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
-            if not(coin_hit_list == []):
-                return True
-            else:
-                return False
-        if self.orientation == "Up":
-            self.rect.y -= vel
-            coin_hit_list = pygame.sprite.spritecollide(self,coin_sprites,False)
-            if not(coin_hit_list == []):
-                return True
-            else:
                 return False
 
     def draw_player(self):

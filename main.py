@@ -66,11 +66,44 @@ player_sprite = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
+goomba_sprites = pygame.sprite.Group()
 
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
 ''''''''''''''''''''
-    
+
+class goomba(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,goomba_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = goomba_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.Vgravite = 1
+        self.exist = True
+        self.health = 1
+        self.x = x
+        self.y = y
+    def update(self):
+        if self.exist:
+            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+        self.collision()
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        print(blocks_hit_list)
+        if (not (blocks_hit_list == [])) and (player.rect.y <= (self.rect.y-60)):
+            self.exist = False
+            player.score += 500
+            goomba_sprites.remove(self)  
+        if (not (blocks_hit_list == [])) and (player.rect.y >= (self.rect.y-60)):
+            player.health -= 1
+    def draw_goomba(self):
+        x_new = camera.apply_player([self.rect.x])
+        win.blit(goomba_img,(x_new,self.rect.y))
+
+  
 class Camera:
     def __init__(self,width,height):
         self.camera = pygame.Rect(0,0,width,height)
@@ -375,6 +408,8 @@ class Map(pygame.sprite.Sprite):
             win.blit(background_img, (camera.apply_player([0]),-64*2))
             player.updatelives()
             coin_sprites.update()
+            goomba_sprites.update()
+
             '''
             for sprite in brick:
                 win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
@@ -419,6 +454,7 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
+goomba1 = goomba(64,768-6*64,win)
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)

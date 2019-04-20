@@ -6,7 +6,7 @@ pygame.init()
 
 HEIGTH_display = 768
 WIDTH_display = 1280
-x = 150
+x = 100
 y = 768-6*64
 width = 50
 height = 60
@@ -70,7 +70,7 @@ coin_sprites = pygame.sprite.Group()
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
 ''''''''''''''''''''
-
+    
 class Camera:
     def __init__(self,width,height):
         self.camera = pygame.Rect(0,0,width,height)
@@ -298,14 +298,15 @@ class Coin(pygame.sprite.Sprite):
         self.x = x
         self.win = win
         self.exist = True
-        self.update()
+        #self.update()
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collision()
     def collision(self):
-        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,True)
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if not (blocks_hit_list == []):
+            coin_sprites.remove(self)
             self.exist = False
             player.score += 500
 

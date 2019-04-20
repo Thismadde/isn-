@@ -28,7 +28,7 @@ mario_left = pygame.transform.scale(mario_left, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
-goomba_img = pygame.transform.scale(goomba_img, (50,50))
+#goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 
 
@@ -92,12 +92,12 @@ class goomba(pygame.sprite.Sprite):
         self.collision()
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
-        print(blocks_hit_list)
-        if (not (blocks_hit_list == [])) and (player.rect.y <= (self.rect.y-60)):
+        if (not (blocks_hit_list == [])) and (player.rect.y < (self.rect.y)):
+            print('DEATJ')
             self.exist = False
             player.score += 500
             goomba_sprites.remove(self)  
-        if (not (blocks_hit_list == [])) and (player.rect.y >= (self.rect.y-60)):
+        elif (not (blocks_hit_list == [])):
             player.health -= 1
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
@@ -454,7 +454,8 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
-goomba1 = goomba(64,768-6*64,win)
+goomba1 = goomba(500,768-3*64,win)
+goomba1.update()
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)

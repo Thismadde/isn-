@@ -103,7 +103,6 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = y
         self.x = x
         self.y = y
-        self.Vgravite = 1
         self.orientation = "Right"
         self.isCollinding = True
         self.isJumping = False
@@ -147,8 +146,14 @@ class Player(pygame.sprite.Sprite):
             self.rect.y += 3
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
+                Collision = True
                 self.collision_with_ground = True
-                self.rect.y -= 3
+                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                    blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                    if not (blocks_hit_list == []):
+                        self.rect.y -= 1
+                    else:
+                        Collision = False
             else:
                 map.draw()
                 player.draw_player()
@@ -296,7 +301,7 @@ class Coin(pygame.sprite.Sprite):
         self.update()
     def update(self):
         if self.exist:
-            win.blit(self.image,(self.rect.x,self.rect.y))
+            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collision()
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,True)

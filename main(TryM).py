@@ -66,6 +66,7 @@ player_sprite = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
+goomba_sprites = pygame.sprite.Group()
 
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
@@ -79,24 +80,21 @@ class goomba(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.y = y
-        self.x = x
         self.Vgravite = 1
         self.exist = True
         self.health = 1
-        self.x = x+20
-        self.y = y+50
+        self.x = x
+        self.y = y
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collision()
     def collision(self):
-        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,True)
-        if not (blocks_hit_list == []) and player.rect.y =< (self.rect.y - 60):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        print(blocks_hit_list)
+        if (not (blocks_hit_list == [])) and (player.rect.y <= (self.rect.y)):
             self.health -= 1
             player.score += 500
-        else: player.health -= 1
-            time.sleep(200)
     def lives(self):
         if self.health == 0:
             map.draw()
@@ -410,6 +408,7 @@ class Map(pygame.sprite.Sprite):
             win.blit(background_img, (camera.apply_player([0]),-64*2))
             player.updatelives()
             coin_sprites.update()
+            goomba_sprites.update()
             '''
             for sprite in brick:
                 win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
@@ -454,6 +453,7 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
+goomba1 = goomba(64,768-6*64,win)
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
@@ -489,7 +489,7 @@ while run:
         keys = pygame.key.get_pressed() 
         player.moove(keys)
         player.lives()
-        goomba.lives()
+        goomba1.lives()
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(blue_img,(0,0))

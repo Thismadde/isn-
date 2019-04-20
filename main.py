@@ -70,36 +70,7 @@ coin_sprites = pygame.sprite.Group()
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
 ''''''''''''''''''''
-class goomba(pygame.sprite.Sprite):
-    def __init__(self,x,y,win):
-        pygame.sprite.Sprite.__init__(self,goomba_sprites)
-        self.width = TILESIZE
-        self.height = TILESIZE
-        self.image = goomba_img
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.y = y
-        self.x = x
-        self.Vgravite = 1
-        self.exist = True
-        self.health = 1
-    def update(self):
-        if self.exist:
-            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-        self.collision()
-    def collision(self):
-        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,True)
-        if not (blocks_hit_list == []) and player.rect.y =< self.rect.y - 60:
-            self.health -= 1
-            player.score += 500
-        else: player.health -= 1
-            time.sleep(2)
-    def lives(self):
-        if self.health == 0:
-            map.draw()
-            self.exist = False
-            
+
 class Camera:
     def __init__(self,width,height):
         self.camera = pygame.Rect(0,0,width,height)
@@ -336,7 +307,7 @@ class Coin(pygame.sprite.Sprite):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,True)
         if not (blocks_hit_list == []):
             self.exist = False
-            player.score += 100
+            player.score += 500
 
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):

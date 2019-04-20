@@ -70,9 +70,6 @@ coin_sprites = pygame.sprite.Group()
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
 ''''''''''''''''''''
-def time_wait():
-    time_sleep(0.1)
-    return True
     
 class Camera:
     def __init__(self,width,height):
@@ -114,7 +111,6 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
         self.collision_with_ground = True
         self.score = 0
-        self.Vgravity = 1
     def lives(self):
         if self.health == 0:
             self.vies -=  1
@@ -147,11 +143,7 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            self.rect.y += self.Vgravity
-
-            self.Vgravity += 1
-            if self.Vgravity > 20:
-                self.Vgravity = 20
+            self.rect.y += 3
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 Collision = True

@@ -6,7 +6,7 @@ pygame.init()
 
 HEIGTH_display = 768
 WIDTH_display = 1280
-x = 50
+x = 150
 y = 768-6*64
 width = 50
 height = 60
@@ -32,13 +32,14 @@ goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 
 
-background_img = pygame.image.load("data/map/mapclean.png").convert()
+background_img = pygame.image.load("data/map/mapclean_light.png").convert()
 width_fond = background_img.get_width()
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
 terre_herbe = pygame.image.load("data/sprites/sol_1-64.png").convert()
 Block_surprise = pygame.image.load("data/sprites/BlockUuh-64.png").convert()
+coin_img = pygame.image.load("data/sprites/coin-64.png").convert_alpha()
 
 run = True
 CanDoIt = True
@@ -58,10 +59,13 @@ brick = []
 terre_herbe_array = []
 terre_array = []
 surprise_array = []
-
+Coin_array = []
+# Groupe de sprites nécaissaires pour tester les collisions entre groupe :
 all_sprites = pygame.sprite.Group()
+player_sprite = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
+coin_sprites = pygame.sprite.Group()
 
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
@@ -90,7 +94,7 @@ class Camera:
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):
-        pygame.sprite.Sprite.__init__(self)
+        pygame.sprite.Sprite.__init__(self,player_sprite)
         self.width = 50
         self.height = 60
         self.image = pygame.Surface((self.width,self.height))
@@ -107,6 +111,7 @@ class Player(pygame.sprite.Sprite):
         self.vies = 3
         self.health = 100
         self.collision_with_ground = True
+        self.score = 0
     def lives(self):
         if self.health == 0:
             self.vies -=  1
@@ -131,7 +136,11 @@ class Player(pygame.sprite.Sprite):
     def updatelives(self):
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.vies),3,RED)
-        win.blit(textfont,(400,5))      
+        win.blit(textfont,(400,5))  
+
+        player_score = myfont.render("X"+str(self.score),3,RED)
+        win.blit(player_score,(500,5)) 
+
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
@@ -271,6 +280,30 @@ class Sol(pygame.sprite.Sprite):
         self.x = x
         brick.append((self.x,self.y))
         self.win = win
+class Coin(pygame.sprite.Sprite):
+    def __init__(self,x,y,win,image):
+        pygame.sprite.Sprite.__init__(self,coin_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.y = y
+        self.x = x
+        self.win = win
+        self.exist = True
+        self.update()
+    def update(self):
+        if self.exist:
+            win.blit(self.image,(self.rect.x,self.rect.y))
+        self.collision()
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,True)
+        if not (blocks_hit_list == []):
+            self.exist = False
+            player.score += 500
+
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self, sol_sprites)
@@ -304,6 +337,7 @@ class Map(pygame.sprite.Sprite):
         global terre_herbe_array
         global terre_array
         global surprise_array
+        global Coin_array
         self.data = []
         if self.load:
             with open(niveau,"r") as f:
@@ -321,6 +355,9 @@ class Map(pygame.sprite.Sprite):
                         if i == "3":
                             Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
                             surprise_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
+                        if i == "a":
+                            Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
+                            Coin_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         rang = rang + 1
                     rang_colonne += 1
                     rang = 0
@@ -331,6 +368,7 @@ class Map(pygame.sprite.Sprite):
 
             win.blit(background_img, (camera.apply_player([0]),-64*2))
             player.updatelives()
+            coin_sprites.update()
             '''
             for sprite in brick:
                 win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
@@ -363,7 +401,6 @@ class Map(pygame.sprite.Sprite):
 
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
-all_sprites.add(player)
 First_Load = True
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 

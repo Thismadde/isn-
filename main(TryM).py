@@ -224,7 +224,7 @@ class Player(pygame.sprite.Sprite):
         
         self.rect.x += vel
         goomba_hit_list = pygame.sprite.spritecollide(self,goomba_sprites,False)
-        if not(goomba_hit_list == []):
+        if goomba.canCollid == True and not goomba_hit_list == []:
             self.rect.x -= vel*2
             return True
         else:

@@ -92,13 +92,13 @@ class goomba(pygame.sprite.Sprite):
         self.collision()
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
-        if (not (blocks_hit_list == [])) and (player.rect.y < (self.rect.y)):
-            print('DEATJ')
+        if ((not (blocks_hit_list == [])) and (player.rect.y < (self.rect.y))):
             self.exist = False
             player.score += 500
             goomba_sprites.remove(self)  
-        elif (not (blocks_hit_list == [])):
+        elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):
             player.health -= 1
+            player.collisionLocked = True
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
@@ -141,9 +141,10 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 50
         self.vies = 3
-        self.health = 100
+        self.health = 2
         self.collision_with_ground = True
         self.score = 0
+        self.collisionLocked = False
     def lives(self):
         if self.health == 0:
             self.vies -=  1
@@ -164,7 +165,10 @@ class Player(pygame.sprite.Sprite):
         if self.vies == 0:
             global GameOverMenu
             GameOverMenu = True
-
+    def invincibilité(self):
+        if self.collisionLocked == True:
+            time.sleep(2.0)
+            self.collisionLocked == False
     def updatelives(self):
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.health),3,RED)
@@ -172,7 +176,6 @@ class Player(pygame.sprite.Sprite):
 
         player_score = myfont.render("X"+str(self.score),3,RED)
         win.blit(player_score,(500,5)) 
-
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
@@ -189,9 +192,7 @@ class Player(pygame.sprite.Sprite):
                         Collision = False
             else:
                 map.draw()
-                player.draw_player()
-                
-
+                player.draw_player()               
     def collision_with_walls(self):
         if self.orientation == "Right":
             self.rect.x += vel
@@ -229,8 +230,6 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.y += vel
                 return False
-
-
     def draw_player(self):
         if (self.orientation == "Right"):
             x_new = camera.apply_player([self.rect.x])
@@ -258,7 +257,6 @@ class Player(pygame.sprite.Sprite):
             self.jumpCount = 50
         map.draw()
         self.draw_player()
-
     def moove(self,keys):  
         if self.isJumping:
             self.jump()
@@ -447,7 +445,7 @@ map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
 player.draw_player()
 pygame.display.update()
-
+player.invincibilité()
 
 timer = pygame.time.Clock()
 font_cambria = pygame.font.SysFont('Cambria',24)
@@ -491,6 +489,7 @@ while run:
         keys = pygame.key.get_pressed() 
         player.moove(keys)
         player.lives()
+        print(player.collisionLocked)
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(blue_img,(0,0))

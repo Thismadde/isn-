@@ -166,16 +166,22 @@ class Player(pygame.sprite.Sprite):
             global GameOverMenu
             GameOverMenu = True
     def invincibilité(self):
+        n = 0
         if self.collisionLocked == True:
-            time.sleep(2.0)
-            self.collisionLocked == False
+            while n <= 2000:
+                n += 1
+                print(n)
+            if n > 2000:
+                n = 0
+                self.collisionLocked = False
     def updatelives(self):
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.health),3,RED)
         win.blit(textfont,(400,5))  
 
-        player_score = myfont.render("X"+str(self.score),3,RED)
+        player_score = myfont.render("Pts X"+str(self.score),3,RED)
         win.blit(player_score,(500,5)) 
+
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
@@ -445,7 +451,7 @@ map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
 player.draw_player()
 pygame.display.update()
-player.invincibilité()
+
 
 timer = pygame.time.Clock()
 font_cambria = pygame.font.SysFont('Cambria',24)
@@ -453,7 +459,10 @@ fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
 goomba1 = goomba(500,768-3*64,win)
+goomba2 = goomba(1000,768-3*64,win)
 goomba1.update()
+goomba2.update()
+goomba1.collision()
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
@@ -489,7 +498,13 @@ while run:
         keys = pygame.key.get_pressed() 
         player.moove(keys)
         player.lives()
+        player.invincibilité()
+
+
         print(player.collisionLocked)
+        timeout = int(150 - pygame.time.get_ticks()/1000)
+        timeout_draw = myfont.render(str(timeout),3,RED)
+        win.blit(timeout_draw,(1000,5))
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(blue_img,(0,0))

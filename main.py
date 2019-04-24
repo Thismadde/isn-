@@ -167,11 +167,11 @@ class Player(pygame.sprite.Sprite):
 
     def updatelives(self):
         win.blit(mario_vie,(360,5))
-        textfont = myfont.render("X"+str(self.health),3,RED)
-        win.blit(textfont,(400,5))  
+        textfont = myfont.render("X"+str(self.vies),3,RED)
+        win.blit(textfont,(400,5))
 
         player_score = myfont.render("X"+str(self.score),3,RED)
-        win.blit(player_score,(500,5)) 
+        win.blit(player_score,(500,5))
 
     def gravity(self):
         self.collision_with_ground = False

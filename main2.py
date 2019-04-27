@@ -146,15 +146,7 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
         self.collisionLocked = False
     def lives(self):
-        if self.health == 0:
-            self.vies -=  1
-            map.draw()
-            player.draw_player()
-            self.rect.x = 50
-            self.rect.y = 768-3*64
-            camera.update(player)
-            self.health = 1
-        if self.rect.y >=768:
+        if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
             map.draw()
             player.draw_player()
@@ -168,7 +160,7 @@ class Player(pygame.sprite.Sprite):
     def invincibilité(self):
         n = 0
         if self.collisionLocked == True:
-            while n <= 2000:
+            if n <= 2000:
                 n += 1
                 print(n)
             if n > 2000:
@@ -459,7 +451,7 @@ fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
 goomba1 = goomba(500,768-3*64,win)
-goomba2 = goomba(1000,768-3*64,win)
+goomba2 = goomba(6000,768-3*64,win)
 goomba1.update()
 goomba2.update()
 goomba1.collision()

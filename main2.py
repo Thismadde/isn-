@@ -65,6 +65,7 @@ Coin_array = []
 all_sprites = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
+surprise_sprite = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
 goomba_sprites = pygame.sprite.Group()
@@ -248,7 +249,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= self.jumpCount**2 * 0.004
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
-                self.rect.y += self.jumpCount**2 * 0.004
+                self.rect.y += self.jumpCount**2 * 0.004 ## Fonction carré donc saut en forme de parabole. **2 = au carré
                 self.isJumping = False
                 self.jumpCount = 50
             self.jumpCount -= 1

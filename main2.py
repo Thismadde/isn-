@@ -329,6 +329,18 @@ class Player(pygame.sprite.Sprite):
                     if self.collision_with_ground:
                         self.isJumping = True
             return x,y
+    def walk(self):
+        """
+        Time a kan ycommence a marcher
+That quetime clock – time commencer < 0.5sec 
+Print Mario 1
+tant que time clock – time commencer 0.5<t<1
+Print Mario 2
+Tant que time clock – time commencer 1<t<1.5
+Print Mario 3
+If tme clock – time commencer >= 1.5
+Time commencer refresh.
+"""
 
 class Sol(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):

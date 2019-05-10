@@ -52,6 +52,7 @@ niveau = "data/map/mapclean.txt"
 rang_colonne = 0
 rang = 0
 time_sleep = 500
+past_time = 0
 
 ciel = []
 brick = []
@@ -96,9 +97,11 @@ class goomba(pygame.sprite.Sprite):
             self.exist = False
             player.score += 500
             goomba_sprites.remove(self)  
-        elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):
-            player.health -= 1
+        elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):  
             player.collisionLocked = True
+            global past_time
+            past_time = time.time()         
+            player.health -= 50      
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
@@ -141,7 +144,7 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 50
         self.vies = 3
-        self.health = 2
+        self.health = 100
         self.collision_with_ground = True
         self.score = 0
         self.collisionLocked = False
@@ -153,20 +156,19 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = 50
             self.rect.y = 768-3*64
             camera.update(player)
-            self.health = 1
+            self.health = 50
         if self.vies == 0:
             global GameOverMenu
             GameOverMenu = True
-    def invincibilité(self):
-        n = 0
-        if self.collisionLocked == True:
-            if n <= 2000:
-                n += 1
-                print(n)
-            if n > 2000:
-                n = 0
-                self.collisionLocked = False
+    def invincibilite(self):
+        new_time = time.time()
+        if new_time - past_time < 2:
+            new_time = time.time()
+        else:
+            self.collisionLocked = False
     def updatelives(self):
+        if self.collisionLocked == True:
+            player.invincibilite()
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.health),3,RED)
         win.blit(textfont,(400,5))  
@@ -490,13 +492,7 @@ while run:
         keys = pygame.key.get_pressed() 
         player.moove(keys)
         player.lives()
-        player.invincibilité()
 
-
-        print(player.collisionLocked)
-        timeout = int(150 - pygame.time.get_ticks()/1000)
-        timeout_draw = myfont.render(str(timeout),3,RED)
-        win.blit(timeout_draw,(1000,5))
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(blue_img,(0,0))

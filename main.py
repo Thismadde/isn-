@@ -1,4 +1,4 @@
-import pygame
+﻿import pygame
 import time
 pygame.init()
 
@@ -52,6 +52,7 @@ niveau = "data/map/mapclean.txt"
 rang_colonne = 0
 rang = 0
 time_sleep = 500
+past_time = 0
 
 ciel = []
 brick = []
@@ -92,13 +93,15 @@ class goomba(pygame.sprite.Sprite):
         self.collision()
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
-        if (not (blocks_hit_list == [])) and (player.rect.y < (self.rect.y)):
-            print('DEATJ')
+        if ((not (blocks_hit_list == [])) and (player.rect.y < (self.rect.y))):
             self.exist = False
             player.score += 500
             goomba_sprites.remove(self)  
-        elif (not (blocks_hit_list == [])):
-            player.health -= 1
+        elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):  
+            player.collisionLocked = True
+            global past_time
+            past_time = time.time()         
+            player.health -= 50      
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
@@ -144,34 +147,34 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
         self.collision_with_ground = True
         self.score = 0
+        self.collisionLocked = False
     def lives(self):
-        if self.health == 0:
+        if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
             map.draw()
             player.draw_player()
             self.rect.x = 50
             self.rect.y = 768-3*64
             camera.update(player)
-            self.health = 1
-        if self.rect.y >=768:
-            self.vies -=  1
-            map.draw()
-            player.draw_player()
-            self.rect.x = 50
-            self.rect.y = 768-3*64
-            camera.update(player)
-            self.health = 1
+            self.health = 50
         if self.vies == 0:
             global GameOverMenu
             GameOverMenu = True
-
+    def invincibilite(self):
+        new_time = time.time()
+        if new_time - past_time < 2:
+            new_time = time.time()
+        else:
+            self.collisionLocked = False
     def updatelives(self):
+        if self.collisionLocked == True:
+            player.invincibilite()
         win.blit(mario_vie,(360,5))
-        textfont = myfont.render("X"+str(self.vies),3,RED)
-        win.blit(textfont,(400,5))
+        textfont = myfont.render("X"+str(self.health),3,RED)
+        win.blit(textfont,(400,5))  
 
-        player_score = myfont.render("X"+str(self.score),3,RED)
-        win.blit(player_score,(500,5))
+        player_score = myfont.render("Pts X"+str(self.score),3,RED)
+        win.blit(player_score,(500,5)) 
 
     def gravity(self):
         self.collision_with_ground = False
@@ -189,9 +192,7 @@ class Player(pygame.sprite.Sprite):
                         Collision = False
             else:
                 map.draw()
-                player.draw_player()
-                
-
+                player.draw_player()               
     def collision_with_walls(self):
         if self.orientation == "Right":
             self.rect.x += vel
@@ -229,8 +230,6 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.y += vel
                 return False
-
-
     def draw_player(self):
         if (self.orientation == "Right"):
             x_new = camera.apply_player([self.rect.x])
@@ -258,7 +257,6 @@ class Player(pygame.sprite.Sprite):
             self.jumpCount = 50
         map.draw()
         self.draw_player()
-
     def moove(self,keys):  
         if self.isJumping:
             self.jump()
@@ -455,7 +453,10 @@ fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
 goomba1 = goomba(500,768-3*64,win)
+goomba2 = goomba(6000,768-3*64,win)
 goomba1.update()
+goomba2.update()
+goomba1.collision()
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
@@ -491,6 +492,7 @@ while run:
         keys = pygame.key.get_pressed() 
         player.moove(keys)
         player.lives()
+
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(blue_img,(0,0))

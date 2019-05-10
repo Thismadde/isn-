@@ -87,6 +87,7 @@ class goomba(pygame.sprite.Sprite):
         self.health = 1
         self.x = x
         self.y = y
+        self.orientation = 0
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
@@ -105,7 +106,27 @@ class goomba(pygame.sprite.Sprite):
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
-
+    def move(self):
+        if self.exist == True:
+            if self.orientation == 0:
+                self.rect.x -= 0.01*vel
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x += vel*2 
+                else:
+                    self.rect.x += vel
+                    self.orientation = 1
+            if self.orientation == 1:
+                self.rect.x += 0.01*vel
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x -= vel*2 
+                else:
+                    self.rect.x -= vel
+                    self.orientation = 0
+            map.draw()
+            self.draw_goomba()
+            player.draw_player()
   
 class Camera:
     def __init__(self,width,height):
@@ -162,7 +183,7 @@ class Player(pygame.sprite.Sprite):
             GameOverMenu = True
     def invincibilite(self):
         new_time = time.time()
-        if new_time - past_time < 2:
+        if new_time - past_time < 3:
             new_time = time.time()
         else:
             self.collisionLocked = False
@@ -452,7 +473,7 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
-goomba1 = goomba(500,768-3*64,win)
+goomba1 = goomba(1000,768-3*64,win)
 goomba2 = goomba(6000,768-3*64,win)
 goomba1.update()
 goomba2.update()
@@ -471,6 +492,7 @@ while run:
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
                     GameOverMenu = False  
                     player.vies = 3
+                    player.health = 100
     else:
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)
@@ -490,6 +512,7 @@ while run:
                 number += 1
                 fps_rect = fps_label.get_rect()
         keys = pygame.key.get_pressed() 
+        goomba1.move()
         player.moove(keys)
         player.lives()
 

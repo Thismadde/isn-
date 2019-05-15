@@ -175,6 +175,7 @@ class Player(pygame.sprite.Sprite):
         self.collision_with_ground = True
         self.score = 0
         self.collisionLocked = False
+        self.Vgravite = 0.25
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
@@ -206,7 +207,8 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            self.rect.y += 3
+            self.rect.y += self.Vgravite
+            self.Vgravite += 0.15
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 Collision = True
@@ -215,6 +217,7 @@ class Player(pygame.sprite.Sprite):
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
+                        self.Vgravite = 0.25
                     else:
                         Collision = False
             else:

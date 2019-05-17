@@ -37,6 +37,7 @@ mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 #goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
+champi_img = pygame.image.load("data/sprites/champi.png")
 
 
 background_img = pygame.image.load("data/map/mapclean_light.png").convert()
@@ -76,10 +77,81 @@ surprise_sprite = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
 goomba_sprites = pygame.sprite.Group()
+champi_sprites = pygame.sprite.Group()
 
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
 ''''''''''''''''''''
+
+class champi(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,champi_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = champi_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.Vgravite = 1
+        self.exist = True
+        self.x = x
+        self.y = y
+        self.orientation = 0
+    def update(self):
+        if self.exist:
+            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+        self.collision()
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        if (not (blocks_hit_list == []):
+            self.exist = False
+            player.health += 50
+            champi_sprites.remove(self)  
+    def draw_champi(self):
+        x_new = camera.apply_player([self.rect.x])
+        win.blit(champi_img,(x_new,self.rect.y))
+    def move(self):
+        if self.exist == True:
+            if self.orientation == 0:
+                self.rect.x -= 0.01*vel
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x += vel*2 
+                else:
+                    self.rect.x += vel
+                    self.orientation = 1
+            if self.orientation == 1:
+                self.rect.x += 0.01*vel
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x -= vel*2 
+                else:
+                    self.rect.x -= vel
+                    self.orientation = 0
+            self.draw_champi()
+            player.draw_player()
+    def gravity(self):
+        self.collision_with_ground = False
+        if not self.collision_with_ground:
+            if self.Vgravite < 1.5:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.1
+            else: 
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.05
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                Collision = True
+                self.collision_with_ground = True
+                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                    blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                    if not (blocks_hit_list == []):
+                        self.rect.y -= 1
+                        self.Vgravite = 0.25
+                    else:
+                        Collision = False
+            else:
+                champi.draw_champi()       
 
 class goomba(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -491,6 +563,9 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
+champi1 = champi(1000, 400, win)
+champi1.update()
+champi1.collision()
 goomba1 = goomba(1000,768-3*64,win)
 goomba1.update()
 goomba1.collision()

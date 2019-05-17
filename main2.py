@@ -25,6 +25,12 @@ mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
+mario_step_1 = pygame.image.load("data/sprites/mario step 1.png").convert_alpha()
+mario_step_1 = pygame.transform.scale(mario_step_1, (50,60))
+mario_step_2 = pygame.image.load("data/sprites/mario step 2.png").convert_alpha()
+mario_step_2 = pygame.transform.scale(mario_step_2, (50,60))
+mario_step_3 = pygame.image.load("data/sprites/mario step 3.png").convert_alpha()
+mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
@@ -88,6 +94,7 @@ class goomba(pygame.sprite.Sprite):
         self.health = 1
         self.x = x
         self.y = y
+        self.orientation = 0
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
@@ -106,7 +113,27 @@ class goomba(pygame.sprite.Sprite):
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
-
+    def move(self):
+        if self.exist == True:
+            if self.orientation == 0:
+                self.rect.x -= 0.01*vel
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x += vel*2 
+                else:
+                    self.rect.x += vel
+                    self.orientation = 1
+            if self.orientation == 1:
+                self.rect.x += 0.01*vel
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x -= vel*2 
+                else:
+                    self.rect.x -= vel
+                    self.orientation = 0
+            map.draw()
+            self.draw_goomba()
+            player.draw_player()
   
 class Camera:
     def __init__(self,width,height):
@@ -149,6 +176,7 @@ class Player(pygame.sprite.Sprite):
         self.collision_with_ground = True
         self.score = 0
         self.collisionLocked = False
+        self.Vgravite = 0.25
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
@@ -163,7 +191,7 @@ class Player(pygame.sprite.Sprite):
             GameOverMenu = True
     def invincibilite(self):
         new_time = time.time()
-        if new_time - past_time < 2:
+        if new_time - past_time < 3:
             new_time = time.time()
         else:
             self.collisionLocked = False
@@ -180,7 +208,8 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            self.rect.y += 3
+            self.rect.y += self.Vgravite
+            self.Vgravite += 0.15
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 Collision = True
@@ -189,6 +218,7 @@ class Player(pygame.sprite.Sprite):
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
+                        self.Vgravite = 0.25
                     else:
                         Collision = False
             else:
@@ -303,6 +333,18 @@ class Player(pygame.sprite.Sprite):
                     if self.collision_with_ground:
                         self.isJumping = True
             return x,y
+    def walk(self):
+        """
+        Time a kan ycommence a marcher
+That quetime clock – time commencer < 0.5sec 
+Print Mario 1
+tant que time clock – time commencer 0.5<t<1
+Print Mario 2
+Tant que time clock – time commencer 1<t<1.5
+Print Mario 3
+If tme clock – time commencer >= 1.5
+Time commencer refresh.
+"""
 
 class Sol(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):
@@ -453,7 +495,7 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
-goomba1 = goomba(500,768-3*64,win)
+goomba1 = goomba(1000,768-3*64,win)
 goomba2 = goomba(6000,768-3*64,win)
 goomba1.update()
 goomba2.update()
@@ -472,6 +514,7 @@ while run:
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
                     GameOverMenu = False  
                     player.vies = 3
+                    player.health = 100
     else:
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)
@@ -491,6 +534,7 @@ while run:
                 number += 1
                 fps_rect = fps_label.get_rect()
         keys = pygame.key.get_pressed() 
+        goomba1.move()
         player.moove(keys)
         player.lives()
 

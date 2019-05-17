@@ -64,6 +64,7 @@ Coin_array = []
 # Groupe de sprites nécaissaires pour tester les collisions entre groupe :
 all_sprites = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
+surprise_sprite = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
@@ -151,8 +152,8 @@ class Player(pygame.sprite.Sprite):
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
-            map.draw()
-            player.draw_player()
+            #map.draw()
+            #player.draw_player()
             self.rect.x = 50
             self.rect.y = 768-3*64
             camera.update(player)
@@ -190,9 +191,9 @@ class Player(pygame.sprite.Sprite):
                         self.rect.y -= 1
                     else:
                         Collision = False
-            else:
-                map.draw()
-                player.draw_player()               
+            #else:
+                #map.draw()
+                #player.draw_player()               
     def collision_with_walls(self):
         if self.orientation == "Right":
             self.rect.x += vel
@@ -225,6 +226,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= vel
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
+                surprise_sprite.collision()
                 self.rect.y += vel*2
                 return True
             else:
@@ -255,49 +257,49 @@ class Player(pygame.sprite.Sprite):
         else:
             self.isJumping = False
             self.jumpCount = 50
-        map.draw()
-        self.draw_player()
+        #map.draw()
+        #self.draw_player()
     def moove(self,keys):  
         if self.isJumping:
             self.jump()
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                        map.draw()
+                        #map.draw()
                         self.rect.y += vel
                         camera.update(player)
-                        self.draw_player()     
+                        #self.draw_player()     
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -344,6 +346,7 @@ class Coin(pygame.sprite.Sprite):
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self, sol_sprites)
+        pygame.sprite.Sprite.__init__(self, surprise_sprite)
         self.width = TILESIZE
         self.height = TILESIZE
         self.image = Block_surprise
@@ -353,6 +356,19 @@ class Surprise(pygame.sprite.Sprite):
         self.y = y
         self.x = x
         self.win = win
+        self.brick = False
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        if not (blocks_hit_list == []):
+            surprise_sprite.remove(self)
+            self.image = brick_img
+            self.alive = True
+        
+    def update(self):
+        if self.alive:
+            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+
+        
     '''def Afficher(self):
         self.win.blit(self.image,(self.x,self.y))
     '''
@@ -402,11 +418,12 @@ class Map(pygame.sprite.Sprite):
             #print(ciel)
             self.load = False
         else:
-
+            
             win.blit(background_img, (camera.apply_player([0]),-64*2))
             player.updatelives()
             coin_sprites.update()
             goomba_sprites.update()
+            surprise_sprite.update()
 
             '''
             for sprite in brick:
@@ -472,6 +489,8 @@ while run:
                     GameOverMenu = False  
                     player.vies = 3
     else:
+        map.draw()
+        player.draw_player()
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)
         for event in pygame.event.get():

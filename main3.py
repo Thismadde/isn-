@@ -37,7 +37,10 @@ mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 #goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
+<<<<<<< HEAD
 champi_img = pygame.image.load("data/sprites/champi.png")
+=======
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
 
 
 background_img = pygame.image.load("data/map/mapclean_light.png").convert()
@@ -77,12 +80,16 @@ surprise_sprite = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
 goomba_sprites = pygame.sprite.Group()
+<<<<<<< HEAD
 champi_sprites = pygame.sprite.Group()
+=======
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
 
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
 ''''''''''''''''''''
 
+<<<<<<< HEAD
 class champi(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self,champi_sprites)
@@ -153,6 +160,8 @@ class champi(pygame.sprite.Sprite):
             else:
                 self.draw_champi()       
 
+=======
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
 class goomba(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self,goomba_sprites)
@@ -240,7 +249,11 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 50
         self.vies = 3
+<<<<<<< HEAD
         self.health = 50
+=======
+        self.health = 100
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
         self.collision_with_ground = True
         self.score = 0
         self.collisionLocked = False
@@ -455,6 +468,10 @@ class Coin(pygame.sprite.Sprite):
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self, sol_sprites)
+<<<<<<< HEAD
+=======
+        pygame.sprite.Sprite.__init__(self, surprise_sprite)
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
         self.width = TILESIZE
         self.height = TILESIZE
         self.image = Block_surprise
@@ -464,6 +481,13 @@ class Surprise(pygame.sprite.Sprite):
         self.y = y
         self.x = x
         self.win = win
+<<<<<<< HEAD
+=======
+        self.state = "Surprise"
+    def update(self):
+        win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
     '''def Afficher(self):
         self.win.blit(self.image,(self.x,self.y))
     '''
@@ -518,6 +542,7 @@ class Map(pygame.sprite.Sprite):
             player.updatelives()
             coin_sprites.update()
             goomba_sprites.update()
+<<<<<<< HEAD
             champi_sprites.update()
 
             '''
@@ -549,6 +574,8 @@ class Map(pygame.sprite.Sprite):
                     win.blit(Block_surprise,(x_new,sprite[1]))   
             '''
 
+=======
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
 
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
@@ -564,9 +591,12 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
+<<<<<<< HEAD
 champi1 = champi(1000, 300, win)
 champi1.update()
 champi1.collision()
+=======
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
 goomba1 = goomba(1000,768-3*64,win)
 goomba1.update()
 goomba1.collision()
@@ -584,7 +614,11 @@ while run:
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
                     GameOverMenu = False  
                     player.vies = 3
+<<<<<<< HEAD
                     player.health = 50
+=======
+                    player.health = 100
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
     else:
         map.draw()
         player.draw_player()
@@ -607,12 +641,19 @@ while run:
                 fps_rect = fps_label.get_rect()
         keys = pygame.key.get_pressed() 
         goomba1.move()
+<<<<<<< HEAD
         champi1.move()
+=======
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
         player.moove(keys)
         player.lives()
 
         #Compteur de FPS :
         dt = timer.tick() / 1000
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 6499e0beee01f9fe70199837b0e1bc240e7b4884
         win.blit(blue_img,(0,0))
         win.blit(blue_img,(TILESIZE,0))
         win.blit(fps_label,fps_rect)

@@ -11,6 +11,7 @@ y = 768-6*64
 width = 50
 height = 60
 vel = 2
+velgoomba = 1
 TILESIZE = 64
 
 FPS = 500
@@ -116,16 +117,16 @@ class goomba(pygame.sprite.Sprite):
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
-                self.rect.x -= vel
+                self.rect.x -= velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x += vel*2 
+                    self.rect.x += velgoomba*2 
                     self.orientation = "Right"
             if self.orientation == "Right":
-                self.rect.x += vel
+                self.rect.x += velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x -= vel*2 
+                    self.rect.x -= velgoomba*2 
                     self.orientation = "Left"
                     
             ##map.draw()

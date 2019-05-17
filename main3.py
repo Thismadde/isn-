@@ -92,42 +92,42 @@ class champi(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.Vgravite = 1
+        self.Vgravite = 0.25
         self.exist = True
         self.x = x
         self.y = y
-        self.orientation = 0
+        self.orientation = "Right"
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collision()
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
-        if (not (blocks_hit_list == []):
+        if (not (blocks_hit_list == [])):
             self.exist = False
-            player.health += 50
+            if player.health <= 150:
+                player.health += 50
+            else:
+                player.score += 50
             champi_sprites.remove(self)  
     def draw_champi(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(champi_img,(x_new,self.rect.y))
     def move(self):
         if self.exist == True:
-            if self.orientation == 0:
-                self.rect.x -= 0.01*vel
+            if self.orientation == "Left":
+                self.rect.x -= velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x += vel*2 
-                else:
-                    self.rect.x += vel
-                    self.orientation = 1
-            if self.orientation == 1:
-                self.rect.x += 0.01*vel
+                    self.rect.x += velgoomba 
+                    self.orientation = "Right"
+            if self.orientation == "Right":
+                self.rect.x += velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x -= vel*2 
-                else:
-                    self.rect.x -= vel
-                    self.orientation = 0
+                    self.rect.x -= velgoomba*2 
+                    self.orientation = "Left"
+            self.gravity()
             self.draw_champi()
             player.draw_player()
     def gravity(self):
@@ -151,7 +151,7 @@ class champi(pygame.sprite.Sprite):
                     else:
                         Collision = False
             else:
-                champi.draw_champi()       
+                self.draw_champi()       
 
 class goomba(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -240,7 +240,7 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 50
         self.vies = 3
-        self.health = 100
+        self.health = 50
         self.collision_with_ground = True
         self.score = 0
         self.collisionLocked = False
@@ -518,6 +518,7 @@ class Map(pygame.sprite.Sprite):
             player.updatelives()
             coin_sprites.update()
             goomba_sprites.update()
+            champi_sprites.update()
 
             '''
             for sprite in brick:
@@ -563,7 +564,7 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
-champi1 = champi(1000, 400, win)
+champi1 = champi(1000, 300, win)
 champi1.update()
 champi1.collision()
 goomba1 = goomba(1000,768-3*64,win)
@@ -583,7 +584,7 @@ while run:
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
                     GameOverMenu = False  
                     player.vies = 3
-                    player.health = 100
+                    player.health = 50
     else:
         map.draw()
         player.draw_player()
@@ -606,6 +607,7 @@ while run:
                 fps_rect = fps_label.get_rect()
         keys = pygame.key.get_pressed() 
         goomba1.move()
+        champi1.move()
         player.moove(keys)
         player.lives()
 

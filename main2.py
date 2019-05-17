@@ -16,6 +16,7 @@ TILESIZE = 64
 FPS = 500
 
 GameOverMenu = False
+Tnul = False
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
 pygame.display.set_caption("Super Mario Bross")
@@ -36,6 +37,7 @@ mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 #goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
+attente = pygame.image.load("data/attente/fond noir.png").convert()
 
 
 background_img = pygame.image.load("data/map/mapclean_light.png").convert()
@@ -59,6 +61,7 @@ rang_colonne = 0
 rang = 0
 time_sleep = 500
 past_time = 0
+old_time = 0
 
 ciel = []
 brick = []
@@ -180,8 +183,8 @@ class Player(pygame.sprite.Sprite):
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
-            #map.draw()
-            player.draw_player()
+            global Tnul
+            Tnul = True
             self.rect.x = 50
             self.rect.y = 768-3*64
             camera.update(player)
@@ -337,10 +340,12 @@ class Player(pygame.sprite.Sprite):
                     if self.collision_with_ground:
                         self.isJumping = True
             return x,y
-    def walk(self):
-        """
+    """def walk(self):
+        if keys[pygame.K_LEFT]:
+            walk = True
+            while walk = True:"
         Time a kan ycommence a marcher
-That quetime clock – time commencer < 0.5sec 
+Tant quetime clock – time commencer < 0.5sec 
 Print Mario 1
 tant que time clock – time commencer 0.5<t<1
 Print Mario 2
@@ -519,6 +524,20 @@ while run:
                     GameOverMenu = False  
                     player.vies = 3
                     player.health = 100
+    if Tnul == True:
+        old_time = time.time()
+        time = True
+    if time == True:
+        newfond_time = time.time()
+        if newfond_time - old_time < 3:
+            win.blit(attente,(0,0))
+            newfond_time = time.time()
+        else:
+            time = False
+            Tnul = False
+
+
+        
     else:
         map.draw()
         player.draw_player()

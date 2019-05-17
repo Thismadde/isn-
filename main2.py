@@ -207,8 +207,12 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            self.rect.y += self.Vgravite
-            self.Vgravite += 0.15
+            if self.Vgravite < 3:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.15
+            else: 
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.025
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 Collision = True

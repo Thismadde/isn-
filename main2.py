@@ -131,7 +131,7 @@ class goomba(pygame.sprite.Sprite):
                 else:
                     self.rect.x -= vel
                     self.orientation = 0
-            map.draw()
+            ##map.draw()
             self.draw_goomba()
             player.draw_player()
   
@@ -180,7 +180,7 @@ class Player(pygame.sprite.Sprite):
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
-            map.draw()
+            #map.draw()
             player.draw_player()
             self.rect.x = 50
             self.rect.y = 768-3*64
@@ -222,7 +222,7 @@ class Player(pygame.sprite.Sprite):
                     else:
                         Collision = False
             else:
-                map.draw()
+                #map.draw()
                 player.draw_player()               
     def collision_with_walls(self):
         if self.orientation == "Right":
@@ -286,7 +286,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.isJumping = False
             self.jumpCount = 50
-        map.draw()
+        #map.draw()
         self.draw_player()
     def moove(self,keys):  
         if self.isJumping:
@@ -294,14 +294,14 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
@@ -310,14 +310,14 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
@@ -325,7 +325,7 @@ class Player(pygame.sprite.Sprite):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                        map.draw()
+                        #map.draw()
                         self.rect.y += vel
                         camera.update(player)
                         self.draw_player()     
@@ -516,6 +516,8 @@ while run:
                     player.vies = 3
                     player.health = 100
     else:
+        map.draw()
+        player.draw_player()
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)
         for event in pygame.event.get():

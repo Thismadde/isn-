@@ -383,6 +383,7 @@ class Coin(pygame.sprite.Sprite):
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self, sol_sprites)
+        pygame.sprite.Sprite.__init__(self, surprise_sprite)
         self.width = TILESIZE
         self.height = TILESIZE
         self.image = Block_surprise
@@ -392,6 +393,10 @@ class Surprise(pygame.sprite.Sprite):
         self.y = y
         self.x = x
         self.win = win
+        self.state = "Surprise"
+    def update(self):
+        win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+
     '''def Afficher(self):
         self.win.blit(self.image,(self.x,self.y))
     '''
@@ -446,36 +451,6 @@ class Map(pygame.sprite.Sprite):
             player.updatelives()
             coin_sprites.update()
             goomba_sprites.update()
-
-            '''
-            for sprite in brick:
-                win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
-            for sprite in terre_herbe_array:
-                win.blit(terre_herbe,(camera.apply(sprite[0]),sprite[1]))    
-            for sprite in terre_array:
-                win.blit(terre,(camera.apply(sprite[0]),sprite[1]))    
-            for sprite in surprise_array:
-                win.blit(Block_surprise,(camera.apply(sprite[0]),sprite[1]))    
-            '''
-            
-            '''for sprite in brick:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(brick_img,(x_new,sprite[1]))              
-            for sprite in terre_herbe_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(terre_herbe,(x_new,sprite[1]))    
-            for sprite in terre_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(terre,(x_new,sprite[1]))    
-            for sprite in surprise_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(Block_surprise,(x_new,sprite[1]))   
-            '''
-
 
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
@@ -536,6 +511,7 @@ while run:
 
         #Compteur de FPS :
         dt = timer.tick() / 1000
+        
         win.blit(blue_img,(0,0))
         win.blit(blue_img,(TILESIZE,0))
         win.blit(fps_label,fps_rect)

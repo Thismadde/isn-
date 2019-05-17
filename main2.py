@@ -134,7 +134,7 @@ class goomba(pygame.sprite.Sprite):
                 else:
                     self.rect.x -= vel
                     self.orientation = 0
-            map.draw()
+            ##map.draw()
             self.draw_goomba()
             player.draw_player()
   
@@ -185,8 +185,6 @@ class Player(pygame.sprite.Sprite):
             self.vies -=  1
             global Tnul
             Tnul = True
-            map.draw()
-            player.draw_player()
             self.rect.x = 50
             self.rect.y = 768-3*64
             camera.update(player)
@@ -204,7 +202,7 @@ class Player(pygame.sprite.Sprite):
         if self.collisionLocked == True:
             player.invincibilite()
         win.blit(mario_vie,(360,5))
-        textfont = myfont.render("X"+str(self.health),3,RED)
+        textfont = myfont.render("X"+str(self.vies),3,RED)
         win.blit(textfont,(400,5))  
 
         player_score = myfont.render("Pts X"+str(self.score),3,RED)
@@ -213,8 +211,12 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            self.rect.y += self.Vgravite
-            self.Vgravite += 0.15
+            if self.Vgravite < 1.5:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.1
+            else: 
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.05
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 Collision = True
@@ -227,7 +229,7 @@ class Player(pygame.sprite.Sprite):
                     else:
                         Collision = False
             else:
-                map.draw()
+                #map.draw()
                 player.draw_player()               
     def collision_with_walls(self):
         if self.orientation == "Right":
@@ -291,7 +293,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.isJumping = False
             self.jumpCount = 50
-        map.draw()
+        #map.draw()
         self.draw_player()
     def moove(self,keys):  
         if self.isJumping:
@@ -299,14 +301,14 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
@@ -315,14 +317,14 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    map.draw()
+                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
@@ -330,7 +332,7 @@ class Player(pygame.sprite.Sprite):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                        map.draw()
+                        #map.draw()
                         self.rect.y += vel
                         camera.update(player)
                         self.draw_player()     
@@ -537,6 +539,8 @@ while run:
 
         
     else:
+        map.draw()
+        player.draw_player()
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)
         for event in pygame.event.get():

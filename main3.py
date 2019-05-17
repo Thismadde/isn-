@@ -204,8 +204,12 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            self.rect.y += self.Vgravite
-            self.Vgravite += 0.15
+            if self.Vgravite < 1.5:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.1
+            else: 
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.05
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 Collision = True
@@ -224,38 +228,34 @@ class Player(pygame.sprite.Sprite):
         if self.orientation == "Right":
             self.rect.x += vel
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            self.rect.x -= vel
             if not(blocks_hit_list == []):
-                self.rect.x -= vel*2
                 return True
             else:
-                self.rect.x -= vel
                 return False
         if self.orientation == "Left":
             self.rect.x -= vel
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            self.rect.x += vel
             if not(blocks_hit_list == []):
-                self.rect.x += vel*2
                 return True
             else:
-                self.rect.x += vel
                 return False
         if self.orientation == "Down":
             self.rect.y += vel
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            self.rect.y -= vel
             if not(blocks_hit_list == []):
-                self.rect.y -= vel*2
                 return True
             else:
-                self.rect.y -= vel
                 return False
         if self.orientation == "Up":
             self.rect.y -= vel
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            self.rect.y += vel
             if not(blocks_hit_list == []):
-                self.rect.y += vel*2
                 return True
             else:
-                self.rect.y += vel
                 return False
     def draw_player(self):
         if (self.orientation == "Right"):
@@ -293,14 +293,14 @@ class Player(pygame.sprite.Sprite):
                     #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
@@ -309,14 +309,14 @@ class Player(pygame.sprite.Sprite):
                     #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
@@ -324,7 +324,7 @@ class Player(pygame.sprite.Sprite):
                         #map.draw()
                         self.rect.y += vel
                         camera.update(player)
-                        self.draw_player()     
+                        #self.draw_player()     
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True

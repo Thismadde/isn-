@@ -87,7 +87,7 @@ class champi(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self,champi_sprites)
         self.width = TILESIZE
-        self.height = TILESIZE
+        self.height = TILESIZE 
         self.image = champi_img
         self.rect = self.image.get_rect()
         self.rect.x = x

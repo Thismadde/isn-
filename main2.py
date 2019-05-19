@@ -48,6 +48,7 @@ terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
 terre_herbe = pygame.image.load("data/sprites/sol_1-64.png").convert()
 Block_surprise = pygame.image.load("data/sprites/BlockUuh-64.png").convert()
 coin_img = pygame.image.load("data/sprites/coin-64.png").convert_alpha()
+fin_img = pygame.image.load("data/sprites/damier.png")
 
 run = True
 CanDoIt = True
@@ -70,6 +71,7 @@ terre_herbe_array = []
 terre_array = []
 surprise_array = []
 Coin_array = []
+fin_array =[]
 # Groupe de sprites nécaissaires pour tester les collisions entre groupe :
 all_sprites = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
@@ -408,6 +410,21 @@ class Surprise(pygame.sprite.Sprite):
     '''def Afficher(self):
         self.win.blit(self.image,(self.x,self.y))
     '''
+class fin (pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self, sol_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = fin_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.y = y
+        self.x = x
+        self.win = win
+    def finivo(self):
+        if player.rect.x == self.rect.x:
+            print ("fin")
 
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
@@ -427,6 +444,7 @@ class Map(pygame.sprite.Sprite):
         global terre_array
         global surprise_array
         global Coin_array
+        global fin_array
         self.data = []
         if self.load:
             with open(niveau,"r") as f:
@@ -447,6 +465,9 @@ class Map(pygame.sprite.Sprite):
                         if i == "a":
                             Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
                             Coin_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
+                        if i == "f":
+                            fin(rang*TILESIZE,rang_colonne*TILESIZE,win)
+                            fin_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         rang = rang + 1
                     rang_colonne += 1
                     rang = 0
@@ -509,6 +530,8 @@ goomba2 = goomba(6000,768-3*64,win)
 goomba1.update()
 goomba2.update()
 goomba1.collision()
+
+fin.finivo()
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)

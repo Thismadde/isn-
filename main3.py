@@ -38,7 +38,8 @@ goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 #goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 champi_img = pygame.image.load("data/sprites/champi.png")
-
+up_img = pygame.image.load("data/sprites/1up.png")
+up_img = pygame.transform.scale(up_img, (40,40))
 
 background_img = pygame.image.load("data/map/mapclean_light.png").convert()
 width_fond = background_img.get_width()
@@ -78,6 +79,7 @@ ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
 goomba_sprites = pygame.sprite.Group()
 champi_sprites = pygame.sprite.Group()
+up_sprites = pygame.sprite.Group()
 
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
@@ -135,7 +137,7 @@ class champi(pygame.sprite.Sprite):
         if not self.collision_with_ground:
             if self.Vgravite < 1.5:
                 self.rect.y += self.Vgravite
-                self.Vgravite += 0.1
+                self.Vgravite += 0.3
             else: 
                 self.rect.y += self.Vgravite
                 self.Vgravite += 0.05
@@ -151,7 +153,77 @@ class champi(pygame.sprite.Sprite):
                     else:
                         Collision = False
             else:
-                self.draw_champi()       
+                self.draw_champi()
+
+class up(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,up_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE 
+        self.image = up_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.Vgravite = 0.25
+        self.exist = True
+        self.x = x
+        self.y = y
+        self.orientation = "Right"
+    def update(self):
+        if self.exist:
+            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+        self.collision()
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        if (not (blocks_hit_list == [])):
+            self.exist = False
+            player.vies += 1
+            player.score += 100
+            up_sprites.remove(self)  
+
+
+    def draw_up(self):
+        x_new = camera.apply_player([self.rect.x])
+        win.blit(up_img,(x_new,self.rect.y))
+    def move(self):
+        if self.exist == True:
+            if self.orientation == "Left":
+                self.rect.x -= velgoomba
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x += velgoomba 
+                    self.orientation = "Right"
+            if self.orientation == "Right":
+                self.rect.x += velgoomba
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x -= velgoomba*2 
+                    self.orientation = "Left"
+            self.gravity()
+            self.draw_up()
+            player.draw_player()
+    def gravity(self):
+        self.collision_with_ground = False
+        if not self.collision_with_ground:
+            if self.Vgravite < 1.5:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.3
+            else: 
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.05
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                Collision = True
+                self.collision_with_ground = True
+                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                    blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                    if not (blocks_hit_list == []):
+                        self.rect.y -= 1
+                        self.Vgravite = 0.25
+                    else:
+                        Collision = False
+            else:
+                self.draw_up()       
 
 class goomba(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -192,16 +264,15 @@ class goomba(pygame.sprite.Sprite):
                 self.rect.x -= velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x += velgoomba*2 
+                    self.rect.x += velgoomba
                     self.orientation = "Right"
             if self.orientation == "Right":
                 self.rect.x += velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x -= velgoomba*2 
+                    self.rect.x -= velgoomba
                     self.orientation = "Left"
-                    
-            ##map.draw()
+
   
 class Camera:
     def __init__(self,width,height):
@@ -506,7 +577,7 @@ class Map(pygame.sprite.Sprite):
                         if i == "a":
                             Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
                             Coin_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
-                        rang = rang + 1
+                        rang += 1
                     rang_colonne += 1
                     rang = 0
                 rang_colonne = 0
@@ -519,6 +590,7 @@ class Map(pygame.sprite.Sprite):
             coin_sprites.update()
             goomba_sprites.update()
             champi_sprites.update()
+            up_sprites.update()
 
             '''
             for sprite in brick:
@@ -567,6 +639,9 @@ fps_rect = fps_label.get_rect()
 champi1 = champi(1000, 300, win)
 champi1.update()
 champi1.collision()
+up1 = up(900,300,win)
+up1.update()
+up1.collision() 
 goomba1 = goomba(1000,768-3*64,win)
 goomba1.update()
 goomba1.collision()
@@ -608,6 +683,7 @@ while run:
         keys = pygame.key.get_pressed() 
         goomba1.move()
         champi1.move()
+        up1.move()
         player.moove(keys)
         player.lives()
 
@@ -616,7 +692,8 @@ while run:
         win.blit(blue_img,(0,0))
         win.blit(blue_img,(TILESIZE,0))
         win.blit(fps_label,fps_rect)
-        #Fin du compteur   
+        #Fin du compteur  
+         
     pygame.display.update()
 
     

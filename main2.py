@@ -80,6 +80,7 @@ surprise_sprite = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
 goomba_sprites = pygame.sprite.Group()
+fin_sprites = pygame.sprite.Group()
 
 ''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
@@ -160,7 +161,6 @@ class Camera:
         if(self.x < -width_fond + WIDTH_display):
             self.x = -width_fond + WIDTH_display
         self.camera = pygame.Rect(self.x,self.y,self.width,self.height)
-
 class Player(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self,player_sprite)
@@ -182,6 +182,9 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
         self.collisionLocked = False
         self.Vgravite = 0.25
+    def finivo(self):
+         if self.rect.x == fin.rect.x:
+             print("pouloulouh")
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
@@ -213,7 +216,10 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            if self.Vgravite < 1.5:
+            if self.Vgravite < 1:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.3
+            if 1 < self.Vgravite < 1.5:
                 self.rect.y += self.Vgravite
                 self.Vgravite += 0.1
             else: 
@@ -297,20 +303,18 @@ class Player(pygame.sprite.Sprite):
             self.jumpCount = 50
         #map.draw()
         self.draw_player()
-    def moove(self,keys):  
+    def move(self,keys):  
         if self.isJumping:
             self.jump()
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
@@ -319,14 +323,12 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
                     self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
                     self.draw_player()
@@ -334,7 +336,6 @@ class Player(pygame.sprite.Sprite):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                        #map.draw()
                         self.rect.y += vel
                         camera.update(player)
                         self.draw_player()     
@@ -422,9 +423,7 @@ class fin (pygame.sprite.Sprite):
         self.y = y
         self.x = x
         self.win = win
-    def finivo(self):
-        if player.rect.x == self.rect.x:
-            print ("fin")
+    
 
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
@@ -531,7 +530,6 @@ goomba1.update()
 goomba2.update()
 goomba1.collision()
 
-fin.finivo()
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)

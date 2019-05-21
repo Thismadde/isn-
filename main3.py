@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 pygame.init()
 
 
@@ -99,6 +100,7 @@ class champi(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.orientation = "Right"
+
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
@@ -418,8 +420,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= self.jumpCount**2 * 0.004
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             blocks_hit_list2 = pygame.sprite.spritecollide(self,surprise_sprites,False)
-            if not (blocks_hit_list2 == []):
-                print("TOUCHE LE SURPRISE WHILE JUMP")
+            for hit_blocks in blocks_hit_list2:
+                hit_blocks.transform_to_rock()
             if not(blocks_hit_list == []):
                 self.rect.y += self.jumpCount**2 * 0.004 ## Fonction carré donc saut en forme de parabole. **2 = au carré
                 self.isJumping = False
@@ -503,6 +505,7 @@ class Sol(pygame.sprite.Sprite):
         self.win = win
 class Coin(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):
+        print("POPO")
         pygame.sprite.Sprite.__init__(self,coin_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
@@ -541,15 +544,22 @@ class Surprise(pygame.sprite.Sprite):
         self.win = win
         self.exist = True
     def update(self):
-        if self.exist:
-            self.collision()
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-    def collision(self):
-        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
-        if not (blocks_hit_list == []):
-            self.exist = False
+    def transform_to_rock(self):
+        if self.exist == True:
+            liste = ["coin","up","champi"]
+            result = random.choice(liste)
+            if result == "coin":
+                Coin(self.rect.x, self.rect.y - 64, win,coin_img)
+            elif result == "up":
+                up(self.rect.x, self.rect.y, win)
+            elif result == "champi":
+                champi(self.rect.x, self.rect.y, win)
             self.image = brick_img
-            print("TOUCHE")
+            self.exist = False
+        
+        
+
 
 
 class Map(pygame.sprite.Sprite):
@@ -564,32 +574,20 @@ class Map(pygame.sprite.Sprite):
         win.blit(background_img, (0, -TILESIZE*2))
         global rang_colonne
         global rang
-        global ciel
-        global brick
-        global terre_herbe_array
-        global terre_array
-        global surprise_array
-        global Coin_array
-        self.data = []
         if self.load:
             with open(niveau,"r") as f:
                 for ligne in f:
                     for i in ligne:
                         if i == "1":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,brick_img)
-                            brick.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "5":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre)
-                            terre_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "6":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre_herbe)
-                            terre_herbe_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "3":
                             Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
-                            surprise_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         if i == "a":
                             Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
-                            Coin_array.append((rang*TILESIZE,rang_colonne*TILESIZE))
                         rang += 1
                     rang_colonne += 1
                     rang = 0
@@ -650,14 +648,8 @@ fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
 champi1 = champi(1000, 300, win)
-champi1.update()
-champi1.collision()
 up1 = up(900,300,win)
-up1.update()
-up1.collision() 
 goomba1 = goomba(1000,768-3*64,win)
-goomba1.update()
-goomba1.collision()
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
@@ -695,9 +687,16 @@ while run:
                 number += 1
                 fps_rect = fps_label.get_rect()
         keys = pygame.key.get_pressed() 
-        goomba1.move()
-        champi1.move()
-        up1.move()
+
+        for goomba_list in goomba_sprites:
+            goomba_list.move()
+
+        for champi_list in champi_sprites:
+            champi_list.move()
+
+        for up_list in up_sprites:
+            up_list.move()
+
         player.moove(keys)
         player.lives()
 

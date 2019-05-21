@@ -107,7 +107,7 @@ class champi(pygame.sprite.Sprite):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
             self.exist = False
-            if player.health <= 150:
+            if player.health < 150:
                 player.health += 50
             else:
                 player.score += 50

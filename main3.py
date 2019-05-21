@@ -74,7 +74,7 @@ Coin_array = []
 all_sprites = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
-surprise_sprite = pygame.sprite.Group()
+surprise_sprites = pygame.sprite.Group()
 ciel_sprites = pygame.sprite.Group()
 coin_sprites = pygame.sprite.Group()
 goomba_sprites = pygame.sprite.Group()
@@ -172,7 +172,7 @@ class up(pygame.sprite.Sprite):
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-        self.collision()
+            self.collision() # je l'ai mis dans le if car pas besoin de check collision si existe pas
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
@@ -417,6 +417,9 @@ class Player(pygame.sprite.Sprite):
         if 0<= self.jumpCount <=50:
             self.rect.y -= self.jumpCount**2 * 0.004
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            blocks_hit_list2 = pygame.sprite.spritecollide(self,surprise_sprites,False)
+            if not (blocks_hit_list2 == []):
+                print("TOUCHE LE SURPRISE WHILE JUMP")
             if not(blocks_hit_list == []):
                 self.rect.y += self.jumpCount**2 * 0.004 ## Fonction carré donc saut en forme de parabole. **2 = au carré
                 self.isJumping = False
@@ -515,7 +518,7 @@ class Coin(pygame.sprite.Sprite):
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-        self.collision()
+            self.collision()
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if not (blocks_hit_list == []):
@@ -526,6 +529,7 @@ class Coin(pygame.sprite.Sprite):
 class Surprise(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self, sol_sprites)
+        pygame.sprite.Sprite.__init__(self, surprise_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
         self.image = Block_surprise
@@ -535,9 +539,18 @@ class Surprise(pygame.sprite.Sprite):
         self.y = y
         self.x = x
         self.win = win
-    '''def Afficher(self):
-        self.win.blit(self.image,(self.x,self.y))
-    '''
+        self.exist = True
+    def update(self):
+        if self.exist:
+            self.collision()
+        win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        if not (blocks_hit_list == []):
+            self.exist = False
+            self.image = brick_img
+            print("TOUCHE")
+
 
 class Map(pygame.sprite.Sprite):
     def __init__(self,WIDTH_display,HEIGHT_display,First_Load):
@@ -662,6 +675,7 @@ while run:
                     player.health = 50
     else:
         map.draw()
+        surprise_sprites.update()
         player.draw_player()
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)

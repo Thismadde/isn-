@@ -202,7 +202,7 @@ class Player(pygame.sprite.Sprite):
 
        # super(Player, self).__init__()
 
-        self.animation_time = 0.0005
+        self.animation_time = 0.5
         self.current_time = 0
 
         self.animation_frames = 6
@@ -353,13 +353,13 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
-                    self.update(dt)
+                    #self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
-                    self.update(dt)
+                    #self.update(dt)
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
@@ -367,20 +367,20 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
-                    self.update(dt)
+                    #self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
-                    self.update(dt)
+                    #self.update(dt)
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         self.rect.y += vel
                         camera.update(player)
-                        self.update(dt)    
+                        #self.update(dt)    
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -557,7 +557,7 @@ player = Player(x,y)
 First_Load = True
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
-player.draw_player()
+#player.draw_player()
 
 pygame.display.update()
 

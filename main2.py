@@ -41,13 +41,16 @@ game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 attente = pygame.image.load("data/attente/fond noir.png").convert()
 
 def load_images(path):
+    global images
     images = []
     for file_name in os.listdir(path="data/courtmariocourt"):
         image = pygame.image.load(path + os.sep + file_name).convert()
         image = pygame.transform.scale(image, (50,60))
         images.append(image)
+        print("okk")
     return images
 
+images = load_images(path='data/courtmariocourt')  
 
 background_img = pygame.image.load("data/map/mapclean_light.png").convert()
 width_fond = background_img.get_width()
@@ -171,7 +174,7 @@ class Camera:
             self.x = -width_fond + WIDTH_display
         self.camera = pygame.Rect(self.x,self.y,self.width,self.height)
 class Player(pygame.sprite.Sprite):
-    def __init__(self,x,y, images):
+    def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self,player_sprite)
         self.width = 50
         self.height = 60
@@ -197,7 +200,9 @@ class Player(pygame.sprite.Sprite):
         self.index = 0
         self.image = images[self.index]
 
-        self.animation_time = 0.2
+       # super(Player, self).__init__()
+
+        self.animation_time = 0.0005
         self.current_time = 0
 
         self.animation_frames = 6
@@ -215,7 +220,6 @@ class Player(pygame.sprite.Sprite):
             self.index = (self.index + 1) % len(self.images)
             self.image = self.images[self.index]
 
-        self.rect.move_ip(*self.vel)
     
     def update(self, dt):
         self.update_time_dependent(dt)
@@ -317,16 +321,16 @@ class Player(pygame.sprite.Sprite):
     def draw_player(self):
         if (self.orientation == "Right"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_up,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
         if (self.orientation == "Left"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_left,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
         if (self.orientation == "Up"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_up,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
         if (self.orientation == "Down"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_up,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
     def jump(self):
         if 0<= self.jumpCount <=50:
             self.rect.y -= self.jumpCount**2 * 0.004
@@ -349,13 +353,13 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
-                    self.draw_player()
+                    self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
-                    self.draw_player()
+                    self.update(dt)
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
@@ -363,20 +367,20 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
-                    self.draw_player()
+                    self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
-                    self.draw_player()
+                    self.update(dt)
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         self.rect.y += vel
                         camera.update(player)
-                        self.draw_player()     
+                        self.update(dt)    
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -549,11 +553,12 @@ class Map(pygame.sprite.Sprite):
 
 
 camera = Camera(WIDTH_display,HEIGTH_display)
-player = Player(x,y,images)
+player = Player(x,y)
 First_Load = True
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
 player.draw_player()
+
 pygame.display.update()
 
 
@@ -568,15 +573,15 @@ goomba1.update()
 goomba2.update()
 goomba1.collision()
 
-images = load_images(path='data/courtmariocourt')  # Make sure to provide the relative or full path to the images directory.
+
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
-    dt = clock.tick(FPS)
-    Player.update(dt)
+    dt = timer.tick(FPS)
+#    player.update(dt)
 
 
     if GameOverMenu == True:
@@ -623,8 +628,11 @@ while run:
                 fps_rect = fps_label.get_rect()
         keys = pygame.key.get_pressed() 
         goomba1.move()
-        player.moove(keys)
+        player.move(keys)
         player.lives()
+        
+        #Player.update(player,dt)
+        #Player.draw(screen)
 
         #Compteur de FPS :
         dt = timer.tick() / 1000

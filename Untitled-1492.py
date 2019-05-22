@@ -44,7 +44,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         self.velocity = pygame.math.Vector2(0, 0)
 
-        self.animation_time = 0.2
+        self.animation_time = 0.1
         self.current_time = 0
 
         self.animation_frames = 6
@@ -97,12 +97,12 @@ class AnimatedSprite(pygame.sprite.Sprite):
 def main():
     images = load_images(path='data/courtmariocourt')  # Make sure to provide the relative or full path to the images directory.
     player = AnimatedSprite(position=(100, 100), images=images)
-    all_sprites = pygame.sprite.Group(player)  # Creates a sprite group and adds 'player' to it.
+    all_sprites = pygame.sprite.Group(player)  
 
     running = True
     while running:
 
-        dt = clock.tick(FPS) / 1000  # Amount of seconds between each loop.
+        dt = clock.tick(FPS) / 1000  
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -122,7 +122,7 @@ def main():
                 elif event.key == pygame.K_DOWN or event.key == pygame.K_UP:
                     player.velocity.y = 0
 
-        all_sprites.update(dt)  # Calls the 'update' method on all sprites in the list (currently just the player).
+        all_sprites.update(dt)  
 
         screen.fill(BACKGROUND_COLOR)
         all_sprites.draw(screen)

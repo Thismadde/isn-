@@ -1,4 +1,5 @@
 import pygame
+import os
 import time
 pygame.init()
 
@@ -26,18 +27,26 @@ mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
-mario_step_1 = pygame.image.load("data/sprites/mario step 1.png").convert_alpha()
-mario_step_1 = pygame.transform.scale(mario_step_1, (50,60))
-mario_step_2 = pygame.image.load("data/sprites/mario step 2.png").convert_alpha()
-mario_step_2 = pygame.transform.scale(mario_step_2, (50,60))
-mario_step_3 = pygame.image.load("data/sprites/mario step 3.png").convert_alpha()
-mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
+#mario_step_1 = pygame.image.load("data/sprites/mario step 1.png").convert_alpha()
+#mario_step_1 = pygame.transform.scale(mario_step_1, (50,60))
+#mario_step_2 = pygame.image.load("data/sprites/mario step 2.png").convert_alpha()
+#mario_step_2 = pygame.transform.scale(mario_step_2, (50,60))
+#mario_step_3 = pygame.image.load("data/sprites/mario step 3.png").convert_alpha()
+#mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 #goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 attente = pygame.image.load("data/attente/fond noir.png").convert()
+
+def load_images(path):
+    images = []
+    for file_name in os.listdir(path="data/courtmariocourt"):
+        image = pygame.image.load(path + os.sep + file_name).convert()
+        image = pygame.transform.scale(image, (50,60))
+        images.append(image)
+    return images
 
 
 background_img = pygame.image.load("data/map/mapclean_light.png").convert()
@@ -137,7 +146,7 @@ class goomba(pygame.sprite.Sprite):
                 else:
                     self.rect.x -= vel
                     self.orientation = 0
-            ##map.draw()
+            
             self.draw_goomba()
             player.draw_player()
   
@@ -162,7 +171,7 @@ class Camera:
             self.x = -width_fond + WIDTH_display
         self.camera = pygame.Rect(self.x,self.y,self.width,self.height)
 class Player(pygame.sprite.Sprite):
-    def __init__(self,x,y):
+    def __init__(self,x,y, images):
         pygame.sprite.Sprite.__init__(self,player_sprite)
         self.width = 50
         self.height = 60
@@ -182,6 +191,35 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
         self.collisionLocked = False
         self.Vgravite = 0.25
+        self.images = images
+        self.images_right = images
+        self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
+        self.index = 0
+        self.image = images[self.index]
+
+        self.animation_time = 0.2
+        self.current_time = 0
+
+        self.animation_frames = 6
+        self.current_frame = 0
+
+    def update_time_dependent(self, dt):
+        if self.orientation == "Right":  # Use the right images if sprite is moving right.
+            self.images = self.images_right
+        elif self.orientation == "Left":
+            self.images = self.images_left
+
+        self.current_time += dt
+        if self.current_time >= self.animation_time:
+            self.current_time = 0
+            self.index = (self.index + 1) % len(self.images)
+            self.image = self.images[self.index]
+
+        self.rect.move_ip(*self.vel)
+    
+    def update(self, dt):
+        self.update_time_dependent(dt)
+
     def finivo(self):
          if self.rect.x == fin.rect.x:
              print("pouloulouh")
@@ -511,7 +549,7 @@ class Map(pygame.sprite.Sprite):
 
 
 camera = Camera(WIDTH_display,HEIGTH_display)
-player = Player(x,y)
+player = Player(x,y,images)
 First_Load = True
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
@@ -530,12 +568,17 @@ goomba1.update()
 goomba2.update()
 goomba1.collision()
 
+images = load_images(path='data/courtmariocourt')  # Make sure to provide the relative or full path to the images directory.
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
+    dt = clock.tick(FPS)
+    Player.update(dt)
+
+
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
         for event in pygame.event.get():
@@ -564,6 +607,7 @@ while run:
         player.draw_player()
         clock = pygame.time.Clock()
         milliseconds = clock.tick(FPS)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -571,8 +615,6 @@ while run:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     player.isJumping = True
-                if event.key == pygame.K_F1:
-                    print('a')
             #Compteur de FPS
             elif event.type == USEREVENT:
                 fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)

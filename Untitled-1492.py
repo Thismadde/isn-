@@ -12,18 +12,10 @@ clock = pygame.time.Clock()
 
 
 def load_images(path):
-    """
-    Loads all images in directory. The directory must only contain images.
-
-    Args:
-        path: The relative or absolute path to the directory to load images from.
-
-    Returns:
-        List of images.
-    """
     images = []
-    for file_name in os.listdir(path='D:\Mathis\Desktop\e'):
+    for file_name in os.listdir(path="data/courtmariocourt"):
         image = pygame.image.load(path + os.sep + file_name).convert()
+        image = pygame.transform.scale(image, (50,60))
         images.append(image)
     return images
 
@@ -52,7 +44,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
         self.velocity = pygame.math.Vector2(0, 0)
 
-        self.animation_time = 0.1
+        self.animation_time = 0.2
         self.current_time = 0
 
         self.animation_frames = 6
@@ -103,7 +95,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
 
 def main():
-    images = load_images(path='D:\Mathis\Desktop\e')  # Make sure to provide the relative or full path to the images directory.
+    images = load_images(path='data/courtmariocourt')  # Make sure to provide the relative or full path to the images directory.
     player = AnimatedSprite(position=(100, 100), images=images)
     all_sprites = pygame.sprite.Group(player)  # Creates a sprite group and adds 'player' to it.
 

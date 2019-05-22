@@ -547,7 +547,7 @@ class Surprise(pygame.sprite.Sprite):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
     def transform_to_rock(self):
         if self.exist == True:
-            liste = ["coin","up","champi"]
+            liste = ["coin","up","champi","coin","coin","coin","coin","coin","coin","coin"]
             result = random.choice(liste)
             if result == "coin":
                 Coin(self.rect.x, self.rect.y - 64, win,coin_img)

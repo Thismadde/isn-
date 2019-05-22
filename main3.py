@@ -417,13 +417,13 @@ class Player(pygame.sprite.Sprite):
             win.blit(mario_up,(x_new,self.rect.y))
     def jump(self):
         if 0<= self.jumpCount <=50:
-            self.rect.y -= self.jumpCount**2 * 0.004
+            self.rect.y -= self.jumpCount**2 * 0.005
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             blocks_hit_list2 = pygame.sprite.spritecollide(self,surprise_sprites,False)
             for hit_blocks in blocks_hit_list2:
                 hit_blocks.transform_to_rock()
             if not(blocks_hit_list == []):
-                self.rect.y += self.jumpCount**2 * 0.004 ## Fonction carré donc saut en forme de parabole. **2 = au carré
+                self.rect.y += self.jumpCount**2 * 0.005 ## Fonction carré donc saut en forme de parabole. **2 = au carré
                 self.isJumping = False
                 self.jumpCount = 50
             self.jumpCount -= 1

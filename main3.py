@@ -36,7 +36,7 @@ mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
-#goomba_img = pygame.transform.scale(goomba_img, (50,50))
+goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 champi_img = pygame.image.load("data/sprites/champi.png")
 up_img = pygame.image.load("data/sprites/1up.png")
@@ -109,7 +109,7 @@ class champi(pygame.sprite.Sprite):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
             self.exist = False
-            if player.health <= 150:
+            if player.health < 150:
                 player.health += 50
             else:
                 player.score += 50

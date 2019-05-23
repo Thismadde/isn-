@@ -438,41 +438,31 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    #self.draw_player()
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    #self.draw_player()
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                        #map.draw()
                         self.rect.y += vel
-                        camera.update(player)
-                        #self.draw_player()     
+                        camera.update(player)  
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -499,9 +489,6 @@ class Sol(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.y = y
-        self.x = x
-        brick.append((self.x,self.y))
         self.win = win
 class Coin(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):
@@ -591,7 +578,6 @@ class Map(pygame.sprite.Sprite):
                     rang_colonne += 1
                     rang = 0
                 rang_colonne = 0
-            #print(ciel)
             self.load = False
         else:
 

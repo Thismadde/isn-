@@ -463,7 +463,9 @@ class Player(pygame.sprite.Sprite):
         self.draw_player()
     def moove(self,keys):  
         if keys[pygame.K_ESCAPE]:
+            global GamePauseMenu
             GamePauseMenu = True
+            print("youpi")
         if self.isJumping:
             self.jump()
             if keys[pygame.K_LEFT]:
@@ -610,36 +612,6 @@ class Map(pygame.sprite.Sprite):
             champi_sprites.update()
             up_sprites.update()
 
-            '''
-            for sprite in brick:
-                win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
-            for sprite in terre_herbe_array:
-                win.blit(terre_herbe,(camera.apply(sprite[0]),sprite[1]))    
-            for sprite in terre_array:
-                win.blit(terre,(camera.apply(sprite[0]),sprite[1]))    
-            for sprite in surprise_array:
-                win.blit(Block_surprise,(camera.apply(sprite[0]),sprite[1]))    
-            '''
-            
-            '''for sprite in brick:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(brick_img,(x_new,sprite[1]))              
-            for sprite in terre_herbe_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(terre_herbe,(x_new,sprite[1]))    
-            for sprite in terre_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(terre,(x_new,sprite[1]))    
-            for sprite in surprise_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(Block_surprise,(x_new,sprite[1]))   
-            '''
-
-
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
 First_Load = True
@@ -664,17 +636,15 @@ pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
-<<<<<<< HEAD
-    if GamePauseMenu == True:
-        print('yes')
-        win.blit(game_pause,(0,0))
-            
-    elif GameOverMenu == True:
-=======
     dt = timer.tick(FPS)
     player.update(dt)
+    if GamePauseMenu == True:
+        win.blit(game_pause,(0,0))
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F1:
+                    GamePauseMenu = False
     if GameOverMenu == True:
->>>>>>> 70596828c323c6db8436bc0a6a7726e285c5d9ac
         win.blit(game_over,(0,0))
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:

@@ -71,7 +71,6 @@ rang = 0
 time_sleep = 500
 past_time = 0
 
-# Groupe de sprites nécaissaires pour tester les collisions entre groupe :
 all_sprites = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
 sol_sprites = pygame.sprite.Group()
@@ -82,9 +81,7 @@ goomba_sprites = pygame.sprite.Group()
 champi_sprites = pygame.sprite.Group()
 up_sprites = pygame.sprite.Group()
 
-''' FONT SYSTEM : '''
 myfont = pygame.font.SysFont("monospace",30)
-''''''''''''''''''''
 
 class champi(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -344,7 +341,6 @@ class Player(pygame.sprite.Sprite):
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
-            #map.draw()
             player.draw_player()
             self.rect.x = 50
             self.rect.y = 768-3*64
@@ -394,7 +390,6 @@ class Player(pygame.sprite.Sprite):
                         Collision = False
                         self.rect.y = old_y + 1
             else:
-                #map.draw()
                 player.draw_player()               
     def collision_with_walls(self):
         if self.orientation == "Right":
@@ -457,7 +452,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.isJumping = False
             self.jumpCount = 50
-        #map.draw()
         self.draw_player()
     def moove(self,keys):  
         if self.isJumping:
@@ -523,7 +517,6 @@ class Coin(pygame.sprite.Sprite):
         self.rect.y = y
         self.win = win
         self.exist = True
-        #self.update()
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
@@ -606,36 +599,6 @@ class Map(pygame.sprite.Sprite):
             champi_sprites.update()
             up_sprites.update()
 
-            '''
-            for sprite in brick:
-                win.blit(brick_img,(camera.apply(sprite[0]),sprite[1]))              
-            for sprite in terre_herbe_array:
-                win.blit(terre_herbe,(camera.apply(sprite[0]),sprite[1]))    
-            for sprite in terre_array:
-                win.blit(terre,(camera.apply(sprite[0]),sprite[1]))    
-            for sprite in surprise_array:
-                win.blit(Block_surprise,(camera.apply(sprite[0]),sprite[1]))    
-            '''
-            
-            '''for sprite in brick:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(brick_img,(x_new,sprite[1]))              
-            for sprite in terre_herbe_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(terre_herbe,(x_new,sprite[1]))    
-            for sprite in terre_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(terre,(x_new,sprite[1]))    
-            for sprite in surprise_array:
-                CanDoIt,x_new = camera.apply(sprite)
-                if (CanDoIt == True):
-                    win.blit(Block_surprise,(x_new,sprite[1]))   
-            '''
-
-
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
 First_Load = True
@@ -650,10 +613,6 @@ timer = pygame.time.Clock()
 font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
-
-#champi1 = champi(1000, 300, win)
-#up1 = up(900,300,win)
-#goomba1 = goomba(1000,768-3*64,win)
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)

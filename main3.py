@@ -545,7 +545,6 @@ class Map(pygame.sprite.Sprite):
         self.height = HEIGHT_display
         self.load = First_Load
         self.draw()
-    #def Camera(self):
 
     def draw(self):
         win.blit(background_img, (0, -TILESIZE*2))
@@ -654,9 +653,6 @@ while run:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     player.isJumping = True
-                if event.key == pygame.K_F1:
-                    print('a')
-            #Compteur de FPS
             elif event.type == USEREVENT:
                 fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
                 fps_all += timer.get_fps()

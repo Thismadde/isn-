@@ -1,8 +1,7 @@
 import pygame
-import os
 import time
 pygame.init()
-
+import os
 
 
 HEIGTH_display = 768
@@ -203,7 +202,7 @@ class Player(pygame.sprite.Sprite):
        # super(Player, self).__init__()
 
         self.animation_time = 0.5
-        self.current_time = 0
+               self.current_time = 0
 
         self.animation_frames = 6
         self.current_frame = 0
@@ -239,7 +238,7 @@ class Player(pygame.sprite.Sprite):
         if self.vies == 0:
             global GameOverMenu
             GameOverMenu = True
-    def invincibilite(self):
+    def invincibilite(self):z
         new_time = time.time()
         if new_time - past_time < 3:
             new_time = time.time()
@@ -353,13 +352,13 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
-                    #self.update(dt)
+                    self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
-                    #self.update(dt)
+                    self.update(dt)
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
@@ -367,20 +366,20 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
-                    #self.update(dt)
+                    self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
-                    #self.update(dt)
+                    self.update(dt)
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         self.rect.y += vel
                         camera.update(player)
-                        #self.update(dt)    
+                        self.update(dt)    
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -557,7 +556,7 @@ player = Player(x,y)
 First_Load = True
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
-#player.draw_player()
+player.draw_player()
 
 pygame.display.update()
 
@@ -581,7 +580,7 @@ fps_all = 0
 number = 0
 while run:
     dt = timer.tick(FPS)
-#    player.update(dt)
+    player.update(dt)
 
 
     if GameOverMenu == True:
@@ -631,7 +630,7 @@ while run:
         player.move(keys)
         player.lives()
         
-        #Player.update(player,dt)
+        Player.update(player,dt)
         #Player.draw(screen)
 
         #Compteur de FPS :

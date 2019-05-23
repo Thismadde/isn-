@@ -15,6 +15,7 @@ vel = 2
 velgoomba = 1
 TILESIZE = 64
 
+
 FPS = 500
 
 GameOverMenu = False
@@ -36,7 +37,7 @@ mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
-goomba_img = pygame.transform.scale(goomba_img, (50,50))
+#goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 champi_img = pygame.image.load("data/sprites/champi.png")
 up_img = pygame.image.load("data/sprites/1up.png")
@@ -64,13 +65,6 @@ rang = 0
 time_sleep = 500
 past_time = 0
 
-ciel = []
-brick = []
-brick = []
-terre_herbe_array = []
-terre_array = []
-surprise_array = []
-Coin_array = []
 # Groupe de sprites nécaissaires pour tester les collisions entre groupe :
 all_sprites = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
@@ -283,9 +277,6 @@ class Camera:
         self.x = 0
         self.y = 0
         self.height = height
-    def apply(self,entity):
-        x_cam = entity[0] + self.camera.x
-        return (True,x_cam)
     def apply_player(self,entity):
         x_cam = entity[0] + self.camera.x
         return x_cam    
@@ -359,6 +350,7 @@ class Player(pygame.sprite.Sprite):
             if not(blocks_hit_list == []):
                 Collision = True
                 self.collision_with_ground = True
+                old_y = self.rect.y
                 while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
@@ -366,6 +358,9 @@ class Player(pygame.sprite.Sprite):
                         self.Vgravite = 0.25
                     else:
                         Collision = False
+                    if old_y - self.rect.y > 10: #Eviter le bug du player qui passe au dessus
+                        Collision = False
+                        self.rect.y = old_y + 1
             else:
                 #map.draw()
                 player.draw_player()               
@@ -500,8 +495,6 @@ class Coin(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.y = y
-        self.x = x
         self.win = win
         self.exist = True
         #self.update()
@@ -526,8 +519,6 @@ class Surprise(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.y = y
-        self.x = x
         self.win = win
         self.exist = True
     def update(self):
@@ -573,6 +564,8 @@ class Map(pygame.sprite.Sprite):
                             Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
                         if i == "a":
                             Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
+                        if i == "g":
+                            goomba(rang*TILESIZE,rang_colonne*TILESIZE,win)
                         rang += 1
                     rang_colonne += 1
                     rang = 0

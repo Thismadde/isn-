@@ -29,8 +29,6 @@ blue_img = pygame.image.load("data/sprites/blue.png").convert()
 mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_up_left = pygame.transform.flip(mario_up, True, False)  # Flipping every image.
-
-
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
@@ -153,7 +151,7 @@ class champi(pygame.sprite.Sprite):
             if not(blocks_hit_list == []):
                 Collision = True
                 self.collision_with_ground = True
-                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                while Collision: 
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
@@ -180,7 +178,7 @@ class up(pygame.sprite.Sprite):
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-            self.collision() # je l'ai mis dans le if car pas besoin de check collision si existe pas
+            self.collision() 
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
@@ -223,7 +221,7 @@ class up(pygame.sprite.Sprite):
             if not(blocks_hit_list == []):
                 Collision = True
                 self.collision_with_ground = True
-                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                while Collision:
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
@@ -323,7 +321,7 @@ class Player(pygame.sprite.Sprite):
         self.Vgravite = 0.25
         self.images = images
         self.images_right = images
-        self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
+        self.images_left = [pygame.transform.flip(image, True, False) for image in images] 
         self.index = 0
         self.image = images[self.index]
         self.animation_time = 150
@@ -481,7 +479,7 @@ class Player(pygame.sprite.Sprite):
             for hit_blocks in blocks_hit_list2:
                 hit_blocks.transform_to_rock()
             if not(blocks_hit_list == []):
-                self.rect.y += self.jumpCount**2 * 0.005 ## Fonction carré donc saut en forme de parabole. **2 = au carré
+                self.rect.y += self.jumpCount**2 * 0.005 
                 self.isJumping = False
                 self.jumpCount = 50
             self.jumpCount -= 1
@@ -664,6 +662,10 @@ pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
+    if GamePauseMenu == True:
+        print('yes')
+        win.blit(game_pause,(0,0))
+        
     dt = timer.tick(FPS)
     player.update(dt)
     if GamePauseMenu == True:

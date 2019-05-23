@@ -202,7 +202,7 @@ class Player(pygame.sprite.Sprite):
        # super(Player, self).__init__()
 
         self.animation_time = 0.5
-               self.current_time = 0
+        self.current_time = 0
 
         self.animation_frames = 6
         self.current_frame = 0
@@ -238,7 +238,7 @@ class Player(pygame.sprite.Sprite):
         if self.vies == 0:
             global GameOverMenu
             GameOverMenu = True
-    def invincibilite(self):z
+    def invincibilite(self):
         new_time = time.time()
         if new_time - past_time < 3:
             new_time = time.time()

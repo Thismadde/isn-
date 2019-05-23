@@ -28,6 +28,9 @@ blue_img = pygame.image.load("data/sprites/blue.png").convert()
 
 mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
+mario_up_left = pygame.transform.flip(mario_up, True, False)  # Flipping every image.
+
+
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
@@ -41,12 +44,15 @@ up_img = pygame.transform.scale(up_img, (40,40))
 
 def load_images(path):
     global images
+    global images_grande
     images = []
+    images_grande = []
     for file_name in os.listdir(path="data/courtmariocourt"):
         image = pygame.image.load(path + os.sep + file_name).convert_alpha()
-        image = pygame.transform.scale(image, (50,60))
-        images.append(image)
-        print("okk")
+        image_petit = pygame.transform.scale(image, (50,60))
+        image_grande = pygame.transform.scale(image, (50,80))
+        images_grande.append(image_grande)
+        images.append(image_petit)
     return images
 
 images = load_images(path='data/courtmariocourt')
@@ -110,6 +116,7 @@ class champi(pygame.sprite.Sprite):
             self.exist = False
             if player.health < 150:
                 player.health += 50
+                player.change_size
             else:
                 player.score += 50
             champi_sprites.remove(self)  
@@ -323,18 +330,28 @@ class Player(pygame.sprite.Sprite):
         self.current_time = 0
         self.animation_frames = 6
         self.current_frame = 0
+        self.isWalking = True
+        self.ancien_x = 0
+
 
     def update_time_dependent(self, dt):
-        if self.orientation == "Right":  # Use the right images if sprite is moving right.
-            self.images = self.images_right
-        elif self.orientation == "Left":
-            self.images = self.images_left
+        if self.isWalking:
+            if self.orientation == "Right":  # Use the right images if sprite is moving right.
+                self.images = self.images_right
+            elif self.orientation == "Left":
+                self.images = self.images_left
 
-        self.current_time += dt
-        if self.current_time >= self.animation_time:
-            self.current_time = 0
-            self.index = (self.index + 1) % len(self.images)
-            self.image = self.images[self.index]
+            self.current_time += dt
+            if self.current_time >= self.animation_time:
+                self.current_time = 0
+                self.index = (self.index + 1) % len(self.images)
+                self.image = self.images[self.index]
+        else:
+            if self.orientation == "Left":
+                self.image = mario_up_left
+            elif self.orientation == "Right":
+                self.image = mario_up
+            
 
     
     def update(self, dt):
@@ -351,6 +368,23 @@ class Player(pygame.sprite.Sprite):
         if self.vies == 0:
             global GameOverMenu
             GameOverMenu = True
+
+    def change_size(self):
+        if self.health == 50:
+            self.width = 50
+            self.height = 60
+            self.images = images
+            self.images_right = images
+            self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
+        if self.health >= 100:
+            print("ues")
+            self.width = 50
+            self.height = 80
+            self.rect.y -= 20
+            self.images = images_grande
+            self.images_right = images_grande
+            self.images_left = [pygame.transform.flip(image, True, False) for image in images_grande]  # Flipping every image.
+
     def invincibilite(self):
         new_time = time.time()
         if new_time - past_time < 3:
@@ -456,6 +490,11 @@ class Player(pygame.sprite.Sprite):
             self.jumpCount = 50
         self.draw_player()
     def moove(self,keys):  
+        if self.ancien_x != self.rect.x:
+            self.isWalking = True
+        else:
+            self.isWalking = False
+        self.ancien_x = self.rect.x
         if keys[pygame.K_ESCAPE]:
             global GamePauseMenu
             GamePauseMenu = True
@@ -549,7 +588,7 @@ class Surprise(pygame.sprite.Sprite):
     def update(self):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
     def transform_to_rock(self):   
-        liste = ["coin","up","champi","coin","coin","coin","coin","coin","coin","coin"]
+        liste = ["champi"]
         result = random.choice(liste)
         if result == "coin":
             Coin(self.rect.x, self.rect.y - 64, win,coin_img)

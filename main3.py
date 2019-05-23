@@ -453,7 +453,9 @@ class Player(pygame.sprite.Sprite):
         self.draw_player()
     def moove(self,keys):  
         if keys[pygame.K_ESCAPE]:
+            global GamePauseMenu
             GamePauseMenu = True
+            print("youpi")
         if self.isJumping:
             self.jump()
             if keys[pygame.K_LEFT]:
@@ -625,6 +627,12 @@ while run:
         
     dt = timer.tick(FPS)
     player.update(dt)
+    if GamePauseMenu == True:
+        win.blit(game_pause,(0,0))
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F1:
+                    GamePauseMenu = False
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
         for event in pygame.event.get():

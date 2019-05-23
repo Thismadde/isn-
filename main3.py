@@ -42,7 +42,7 @@ champi_img = pygame.image.load("data/sprites/champi.png")
 up_img = pygame.image.load("data/sprites/1up.png")
 up_img = pygame.transform.scale(up_img, (40,40))
 
-background_img = pygame.image.load("data/map/mapclean_light.png").convert()
+background_img = pygame.image.load("data/map/map200.png").convert()
 width_fond = background_img.get_width()
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
@@ -58,7 +58,7 @@ RED = (255,0,0)
 BLUE = (0, 0, 50)
 BROWN = (150,75,0)
 
-niveau = "data/map/mapclean.txt"
+niveau = "data/map/map_200.txt"
 rang_colonne = 0
 rang = 0
 time_sleep = 500
@@ -438,41 +438,31 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    #self.draw_player()
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
                 self.orientation = "Left"
                 if not(self.x - vel<0) and not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x -= vel
                     camera.update(player)
-                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
-                    #map.draw()
                     self.rect.x += vel
                     camera.update(player)
-                    #self.draw_player()
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
-                        #map.draw()
                         self.rect.y += vel
-                        camera.update(player)
-                        #self.draw_player()     
+                        camera.update(player)  
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -499,9 +489,6 @@ class Sol(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.y = y
-        self.x = x
-        brick.append((self.x,self.y))
         self.win = win
 class Coin(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):
@@ -545,18 +532,17 @@ class Surprise(pygame.sprite.Sprite):
         self.exist = True
     def update(self):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-    def transform_to_rock(self):
-        if self.exist == True:
-            liste = ["coin","up","champi","coin","coin","coin","coin","coin","coin","coin"]
-            result = random.choice(liste)
-            if result == "coin":
-                Coin(self.rect.x, self.rect.y - 64, win,coin_img)
-            elif result == "up":
-                up(self.rect.x, self.rect.y, win)
-            elif result == "champi":
-                champi(self.rect.x, self.rect.y, win)
-            self.image = brick_img
-            self.exist = False
+    def transform_to_rock(self):   
+        liste = ["coin","up","champi","coin","coin","coin","coin","coin","coin","coin"]
+        result = random.choice(liste)
+        if result == "coin":
+            Coin(self.rect.x, self.rect.y - 64, win,coin_img)
+        elif result == "up":
+            up(self.rect.x, self.rect.y, win)
+        elif result == "champi":
+            champi(self.rect.x, self.rect.y, win)
+        self.image = brick_img
+        surprise_sprites.remove(self)
         
         
 
@@ -577,13 +563,13 @@ class Map(pygame.sprite.Sprite):
             with open(niveau,"r") as f:
                 for ligne in f:
                     for i in ligne:
-                        if i == "1":
+                        if i == "4":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,brick_img)
-                        if i == "5":
+                        if i == "2":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre)
-                        if i == "6":
-                            Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre_herbe)
                         if i == "3":
+                            Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre_herbe)
+                        if i == "5":
                             Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
                         if i == "a":
                             Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
@@ -645,9 +631,9 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 
-champi1 = champi(1000, 300, win)
-up1 = up(900,300,win)
-goomba1 = goomba(1000,768-3*64,win)
+#champi1 = champi(1000, 300, win)
+#up1 = up(900,300,win)
+#goomba1 = goomba(1000,768-3*64,win)
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)

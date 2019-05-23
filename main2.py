@@ -201,7 +201,7 @@ class Player(pygame.sprite.Sprite):
 
        # super(Player, self).__init__()
 
-        self.animation_time = 0.5
+        self.animation_time = 150
         self.current_time = 0
 
         self.animation_frames = 6

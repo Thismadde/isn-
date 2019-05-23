@@ -43,7 +43,7 @@ def load_images(path):
     global images
     images = []
     for file_name in os.listdir(path="data/courtmariocourt"):
-        image = pygame.image.load(path + os.sep + file_name).convert()
+        image = pygame.image.load(path + os.sep + file_name).convert_alpha()
         image = pygame.transform.scale(image, (50,60))
         images.append(image)
         print("okk")
@@ -198,12 +198,8 @@ class Player(pygame.sprite.Sprite):
         self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
         self.index = 0
         self.image = images[self.index]
-
-       # super(Player, self).__init__()
-
         self.animation_time = 150
         self.current_time = 0
-
         self.animation_frames = 6
         self.current_frame = 0
 
@@ -581,8 +577,6 @@ number = 0
 while run:
     dt = timer.tick(FPS)
     player.update(dt)
-
-
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
         for event in pygame.event.get():
@@ -627,6 +621,7 @@ while run:
                 fps_rect = fps_label.get_rect()
         keys = pygame.key.get_pressed() 
         goomba1.move()
+
         player.move(keys)
         player.lives()
         

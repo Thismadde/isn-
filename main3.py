@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import os
 pygame.init()
 
 
@@ -28,12 +29,12 @@ mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
-mario_step_1 = pygame.image.load("data/sprites/mario step 1.png").convert_alpha()
-mario_step_1 = pygame.transform.scale(mario_step_1, (50,60))
-mario_step_2 = pygame.image.load("data/sprites/mario step 2.png").convert_alpha()
-mario_step_2 = pygame.transform.scale(mario_step_2, (50,60))
-mario_step_3 = pygame.image.load("data/sprites/mario step 3.png").convert_alpha()
-mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
+#mario_step_1 = pygame.image.load("data/sprites/mario step 1.png").convert_alpha()
+#mario_step_1 = pygame.transform.scale(mario_step_1, (50,60))
+#mario_step_2 = pygame.image.load("data/sprites/mario step 2.png").convert_alpha()
+#mario_step_2 = pygame.transform.scale(mario_step_2, (50,60))
+#mario_step_3 = pygame.image.load("data/sprites/mario step 3.png").convert_alpha()
+#mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
@@ -42,6 +43,18 @@ game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 champi_img = pygame.image.load("data/sprites/champi.png")
 up_img = pygame.image.load("data/sprites/1up.png")
 up_img = pygame.transform.scale(up_img, (40,40))
+
+def load_images(path):
+    global images
+    images = []
+    for file_name in os.listdir(path="data/courtmariocourt"):
+        image = pygame.image.load(path + os.sep + file_name).convert()
+        image = pygame.transform.scale(image, (50,60))
+        images.append(image)
+        print("okk")
+    return images
+
+images = load_images(path='data/courtmariocourt')
 
 background_img = pygame.image.load("data/map/map200.png").convert()
 width_fond = background_img.get_width()
@@ -304,11 +317,37 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 50
         self.vies = 3
-        self.health = 50
+        self.health = 100
         self.collision_with_ground = True
         self.score = 0
         self.collisionLocked = False
         self.Vgravite = 0.25
+        self.images = images
+        self.images_right = images
+        self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
+        self.index = 0
+        self.image = images[self.index]
+        self.animation_time = 150
+        self.current_time = 0
+        self.animation_frames = 6
+        self.current_frame = 0
+
+    def update_time_dependent(self, dt):
+        if self.orientation == "Right":  # Use the right images if sprite is moving right.
+            self.images = self.images_right
+        elif self.orientation == "Left":
+            self.images = self.images_left
+
+        self.current_time += dt
+        if self.current_time >= self.animation_time:
+            self.current_time = 0
+            self.index = (self.index + 1) % len(self.images)
+            self.image = self.images[self.index]
+
+    
+    def update(self, dt):
+        self.update_time_dependent(dt)
+
     def lives(self):
         if self.health == 0 or self.rect.y >=768:
             self.vies -=  1
@@ -400,16 +439,16 @@ class Player(pygame.sprite.Sprite):
     def draw_player(self):
         if (self.orientation == "Right"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_up,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
         if (self.orientation == "Left"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_left,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
         if (self.orientation == "Up"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_up,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
         if (self.orientation == "Down"):
             x_new = camera.apply_player([self.rect.x])
-            win.blit(mario_up,(x_new,self.rect.y))
+            win.blit(self.image,(x_new,self.rect.y))
     def jump(self):
         if 0<= self.jumpCount <=50:
             self.rect.y -= self.jumpCount**2 * 0.005
@@ -435,11 +474,13 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
+                    self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
+                    self.update(dt)
         else:
             self.gravity()
             if keys[pygame.K_LEFT]:
@@ -447,17 +488,20 @@ class Player(pygame.sprite.Sprite):
                 if not(self.x - vel<0) and not self.collision_with_walls():
                     self.rect.x -= vel
                     camera.update(player)
+                    self.update(dt)
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
+                    self.update(dt)
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         self.rect.y += vel
                         camera.update(player)  
+                        self.update(dt)
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -616,6 +660,7 @@ First_Load = True
 map = Map(WIDTH_display,HEIGTH_display,First_Load)
 
 player.draw_player()
+
 pygame.display.update()
 
 
@@ -633,6 +678,8 @@ pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
+    dt = timer.tick(FPS)
+    player.update(dt)
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
         for event in pygame.event.get():
@@ -655,6 +702,7 @@ while run:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     player.isJumping = True
+
             elif event.type == USEREVENT:
                 fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
                 fps_all += timer.get_fps()
@@ -673,7 +721,7 @@ while run:
 
         player.moove(keys)
         player.lives()
-
+        Player.update(player,dt)
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(blue_img,(0,0))

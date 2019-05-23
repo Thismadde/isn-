@@ -37,7 +37,7 @@ mario_step_3 = pygame.transform.scale(mario_step_3, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
-goomba_img = pygame.transform.scale(goomba_img, (50,50))
+#goomba_img = pygame.transform.scale(goomba_img, (50,50))
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
 champi_img = pygame.image.load("data/sprites/champi.png")
 up_img = pygame.image.load("data/sprites/1up.png")
@@ -358,9 +358,9 @@ class Player(pygame.sprite.Sprite):
                         self.Vgravite = 0.25
                     else:
                         Collision = False
-                    if old_y - self.rect.y > 10:
+                    if old_y - self.rect.y > 10: #Eviter le bug du player qui passe au dessus
+                        Collision = False
                         self.rect.y = old_y + 1
-                        print("Saut non autorisé")
             else:
                 #map.draw()
                 player.draw_player()               
@@ -564,6 +564,8 @@ class Map(pygame.sprite.Sprite):
                             Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
                         if i == "a":
                             Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
+                        if i == "g":
+                            goomba(rang*TILESIZE,rang_colonne*TILESIZE,win)
                         rang += 1
                     rang_colonne += 1
                     rang = 0

@@ -20,6 +20,7 @@ TILESIZE = 64
 FPS = 500
 
 GameOverMenu = False
+GamePauseMenu = False
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
 pygame.display.set_caption("Super Mario Bross")
@@ -33,6 +34,7 @@ mario_vie = pygame.image.load("data/sprites/tete mario.png")
 mario_vie = pygame.transform.scale(mario_vie, (30,30))
 goomba_img = pygame.image.load("data/sprites/goomba-64.png").convert_alpha()
 game_over = pygame.image.load("data/gameover/GameOver.png").convert()
+game_pause = pygame.image.load("data/gameover/Menu_Pause.png").convert()
 champi_img = pygame.image.load("data/sprites/champi.png")
 up_img = pygame.image.load("data/sprites/1up.png")
 up_img = pygame.transform.scale(up_img, (40,40))
@@ -454,6 +456,8 @@ class Player(pygame.sprite.Sprite):
             self.jumpCount = 50
         self.draw_player()
     def moove(self,keys):  
+        if keys[pygame.K_ESCAPE]:
+            GamePauseMenu = True
         if self.isJumping:
             self.jump()
             if keys[pygame.K_LEFT]:
@@ -619,9 +623,17 @@ pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
+<<<<<<< HEAD
+    if GamePauseMenu == True:
+        print('yes')
+        win.blit(game_pause,(0,0))
+            
+    elif GameOverMenu == True:
+=======
     dt = timer.tick(FPS)
     player.update(dt)
     if GameOverMenu == True:
+>>>>>>> 70596828c323c6db8436bc0a6a7726e285c5d9ac
         win.blit(game_over,(0,0))
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -630,7 +642,7 @@ while run:
                     GameOverMenu = False  
                     player.vies = 3
                     player.health = 50
-    else:
+    elif GameOverMenu == False and GamePauseMenu == False:
         map.draw()
         surprise_sprites.update()
         player.draw_player()

@@ -146,7 +146,7 @@ class champi(pygame.sprite.Sprite):
             if not(blocks_hit_list == []):
                 Collision = True
                 self.collision_with_ground = True
-                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                while Collision: 
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
@@ -173,7 +173,7 @@ class up(pygame.sprite.Sprite):
     def update(self):
         if self.exist:
             win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-            self.collision() # je l'ai mis dans le if car pas besoin de check collision si existe pas
+            self.collision() 
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
@@ -216,7 +216,7 @@ class up(pygame.sprite.Sprite):
             if not(blocks_hit_list == []):
                 Collision = True
                 self.collision_with_ground = True
-                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                while Collision:
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
@@ -316,16 +316,14 @@ class Player(pygame.sprite.Sprite):
         self.Vgravite = 0.25
         self.images = images
         self.images_right = images
-        self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
+        self.images_left = [pygame.transform.flip(image, True, False) for image in images] 
         self.index = 0
         self.image = images[self.index]
         self.animation_time = 150
         self.current_time = 0
-        self.animation_frames = 6
-        self.current_frame = 0
-
+        self.isWalking = "False"
     def update_time_dependent(self, dt):
-        if self.orientation == "Right":  # Use the right images if sprite is moving right.
+        if self.orientation == "Right" : 
             self.images = self.images_right
         elif self.orientation == "Left":
             self.images = self.images_left
@@ -335,8 +333,6 @@ class Player(pygame.sprite.Sprite):
             self.current_time = 0
             self.index = (self.index + 1) % len(self.images)
             self.image = self.images[self.index]
-
-    
     def update(self, dt):
         self.update_time_dependent(dt)
 
@@ -447,7 +443,7 @@ class Player(pygame.sprite.Sprite):
             for hit_blocks in blocks_hit_list2:
                 hit_blocks.transform_to_rock()
             if not(blocks_hit_list == []):
-                self.rect.y += self.jumpCount**2 * 0.005 ## Fonction carré donc saut en forme de parabole. **2 = au carré
+                self.rect.y += self.jumpCount**2 * 0.005 
                 self.isJumping = False
                 self.jumpCount = 50
             self.jumpCount -= 1
@@ -623,17 +619,13 @@ pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
-<<<<<<< HEAD
     if GamePauseMenu == True:
         print('yes')
         win.blit(game_pause,(0,0))
-            
-    elif GameOverMenu == True:
-=======
+        
     dt = timer.tick(FPS)
     player.update(dt)
     if GameOverMenu == True:
->>>>>>> 70596828c323c6db8436bc0a6a7726e285c5d9ac
         win.blit(game_over,(0,0))
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:

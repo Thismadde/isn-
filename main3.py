@@ -331,7 +331,7 @@ class Player(pygame.sprite.Sprite):
         if self.collisionLocked == True:
             player.invincibilite()
         win.blit(mario_vie,(360,5))
-        textfont = myfont.render("X"+str(self.health),3,RED)
+        textfont = myfont.render("X"+str(self.vies),3,RED)
         win.blit(textfont,(400,5))  
 
         player_score = myfont.render("Pts X"+str(self.score),3,RED)

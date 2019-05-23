@@ -478,19 +478,25 @@ class Player(pygame.sprite.Sprite):
                     self.rect.x -= vel
                     camera.update(player)
                     self.update(dt)
+                else:
+                    camera.update(player)
+                    self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
                     self.rect.x += vel
                     camera.update(player)
                     self.update(dt)
+                else:
+                    camera.update(player)
+                    self.draw_player()
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         self.rect.y += vel
                         camera.update(player)  
-                        self.update(dt)
+                        self.draw_player()
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -626,7 +632,7 @@ while run:
         win.blit(game_pause,(0,0))
         
     dt = timer.tick(FPS)
-    player.update(dt)
+    #player.update(dt)
     if GamePauseMenu == True:
         win.blit(game_pause,(0,0))
         for event in pygame.event.get():

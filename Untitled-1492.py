@@ -21,26 +21,20 @@ def load_images(path):
 
 
 
-class AnimatedSprite(pygame.sprite.Sprite):
+class SpriteAnimé(pygame.sprite.Sprite):
 
     def __init__(self, position, images):
-        """
-        Animated sprite object.
+        
+        super(SpriteAnimé, self).__init__()
 
-        Args:
-            position: x, y coordinate on the screen to place the AnimatedSprite.
-            images: Images to use in the animation.
-        """
-        super(AnimatedSprite, self).__init__()
-
-        size = (50, 60)  # This should match the size of the images.
+        size = (50, 60)  
 
         self.rect = pygame.Rect(position, size)
         self.images = images
         self.images_right = images
-        self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
+        self.images_left = [pygame.transform.flip(image, True, False) for image in images]  
         self.index = 0
-        self.image = images[self.index]  # 'image' is the current image of the animation.
+        self.image = images[self.index]  
 
         self.velocity = pygame.math.Vector2(0, 0)
 
@@ -51,13 +45,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.current_frame = 0
 
     def update_time_dependent(self, dt):
-        """
-        Updates the image of Sprite approximately every 0.1 second.
-
-        Args:
-            dt: Time elapsed between each frame.
-        """
-        if self.velocity.x > 0:  # Use the right images if sprite is moving right.
+       
+        if self.velocity.x > 0:  
             self.images = self.images_right
         elif self.velocity.x < 0:
             self.images = self.images_left
@@ -74,7 +63,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         """
         Updates the image of Sprite every 6 frame (approximately every 0.1 second if frame rate is 60).
         """
-        if self.velocity.x > 0:  # Use the right images if sprite is moving right.
+        if self.velocity.x > 0:  
             self.images = self.images_right
         elif self.velocity.x < 0:
             self.images = self.images_left
@@ -89,14 +78,12 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
     def update(self, dt):
         """This is the method that's being called when 'all_sprites.update(dt)' is called."""
-        # Switch between the two update methods by commenting/uncommenting.
         self.update_time_dependent(dt)
-        # self.update_frame_dependent()
-
+        
 
 def main():
-    images = load_images(path='data/courtmariocourt')  # Make sure to provide the relative or full path to the images directory.
-    player = AnimatedSprite(position=(100, 100), images=images)
+    imagesmario = load_images(path='data/courtmariocourt')  # Make sure to provide the relative or full path to the images directory.
+    player = SpriteAnimé(position=(100, 100), images=imagesmario)
     all_sprites = pygame.sprite.Group(player)  
 
     running = True

@@ -28,7 +28,9 @@ blue_img = pygame.image.load("data/sprites/blue.png").convert()
 
 mario_up = pygame.image.load("data/sprites/mario_droit.png").convert_alpha()
 mario_up = pygame.transform.scale(mario_up, (50,60))
+mario_up_grand = pygame.transform.scale(mario_up, (50,80))
 mario_up_left = pygame.transform.flip(mario_up, True, False)  # Flipping every image.
+mario_up_left_grand = pygame.transform.scale(mario_up_left,(50,80))
 mario_left = pygame.image.load("data/sprites/mario_gauche.png").convert_alpha()
 mario_left = pygame.transform.scale(mario_left, (50,60))
 mario_vie = pygame.image.load("data/sprites/tete mario.png")
@@ -112,9 +114,9 @@ class champi(pygame.sprite.Sprite):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
             self.exist = False
-            if player.health < 150:
+            if player.health < 100:
                 player.health += 50
-                player.change_size
+                player.change_size(False)
             else:
                 player.score += 50
             champi_sprites.remove(self)  
@@ -260,7 +262,8 @@ class goomba(pygame.sprite.Sprite):
             player.collisionLocked = True
             global past_time
             past_time = time.time()         
-            player.health -= 50      
+            player.health -= 50    
+            player.change_size(False)  
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
@@ -303,8 +306,9 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self,player_sprite)
         self.width = 50
         self.height = 60
-        self.image = pygame.Surface((self.width,self.height))
-        self.rect = self.image.get_rect()
+        self.image_petit = pygame.Surface((50,60))
+        self.image_grande = pygame.Surface((50,80))
+        self.rect = self.image_petit.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.x = x
@@ -314,7 +318,7 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.jumpCount = 50
         self.vies = 3
-        self.health = 100
+        self.health = 50
         self.collision_with_ground = True
         self.score = 0
         self.collisionLocked = False
@@ -346,9 +350,15 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.images[self.index]
         else:
             if self.orientation == "Left":
-                self.image = mario_up_left
+                if self.health <= 50:
+                    self.image = mario_up_left
+                else:
+                    self.image = mario_up_left_grand
             elif self.orientation == "Right":
-                self.image = mario_up
+                if self.health <= 50:
+                    self.image = mario_up
+                else:
+                    self.image = mario_up_grand
             
 
     
@@ -360,28 +370,36 @@ class Player(pygame.sprite.Sprite):
             self.vies -=  1
             player.draw_player()
             self.rect.x = 50
-            self.rect.y = 768-3*64
+            self.rect.y = 768-5*64
             camera.update(player)
             self.health = 50
+            self.change_size(True)
         if self.vies == 0:
+            self.change_size(True)
             global GameOverMenu
             GameOverMenu = True
 
-    def change_size(self):
+    def change_size(self,respawn):
         if self.health == 50:
-            self.width = 50
             self.height = 60
             self.images = images
             self.images_right = images
-            self.images_left = [pygame.transform.flip(image, True, False) for image in images]  # Flipping every image.
+            self.images_left = [pygame.transform.flip(image, True, False) for image in images] # Flipping every image.
+            self.y_avant_transformation = self.rect.y
+            self.x_avant_tranformation = self.rect.x
+            self.rect = self.image_petit.get_rect()
+            self.rect.x = self.x_avant_tranformation 
+            self.rect.y = self.y_avant_transformation + 20
         if self.health >= 100:
-            print("ues")
-            self.width = 50
             self.height = 80
-            self.rect.y -= 20
             self.images = images_grande
             self.images_right = images_grande
             self.images_left = [pygame.transform.flip(image, True, False) for image in images_grande]  # Flipping every image.
+            self.x_avant_tranformation = self.rect.x
+            self.y_avant_transformation = self.rect.y 
+            self.rect = self.image_grande.get_rect()
+            self.rect.x = self.x_avant_tranformation 
+            self.rect.y = self.y_avant_transformation - 20
 
     def invincibilite(self):
         new_time = time.time()

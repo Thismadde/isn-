@@ -120,7 +120,7 @@ class champi(pygame.sprite.Sprite):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
             self.exist = False
-            if player.health < 100:
+            if player.health < 150:
                 player.health += 50
                 player.change_size(False)
             else:
@@ -580,7 +580,6 @@ class Sol(pygame.sprite.Sprite):
         self.win = win
 class Coin(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):
-        print("POPO")
         pygame.sprite.Sprite.__init__(self,coin_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
@@ -621,9 +620,9 @@ class Surprise(pygame.sprite.Sprite):
         if result == "coin":
             Coin(self.rect.x, self.rect.y - 64, win,coin_img)
         elif result == "up":
-            up(self.rect.x, self.rect.y, win)
+            up(self.rect.x, self.rect.y - 40, win)
         elif result == "champi":
-            champi(self.rect.x, self.rect.y, win)
+            champi(self.rect.x, self.rect.y - 40, win)
         self.image = brick_img
         surprise_sprites.remove(self)
         

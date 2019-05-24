@@ -120,7 +120,7 @@ class champi(pygame.sprite.Sprite):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
             self.exist = False
-            if player.health < 100:
+            if player.health < 150:
                 player.health += 50
                 player.change_size(False)
             else:
@@ -334,7 +334,7 @@ class Player(pygame.sprite.Sprite):
         self.images_left = [pygame.transform.flip(image, True, False) for image in images] 
         self.index = 0
         self.image = images[self.index]
-        self.animation_time = 150
+        self.animation_time = 100
         self.current_time = 0
         self.animation_frames = 6
         self.current_frame = 0
@@ -623,9 +623,9 @@ class Surprise(pygame.sprite.Sprite):
         if result == "coin":
             Coin(self.rect.x, self.rect.y - 64, win,coin_img)
         elif result == "up":
-            up(self.rect.x, self.rect.y, win)
+            up(self.rect.x, self.rect.y - 40, win)
         elif result == "champi":
-            champi(self.rect.x, self.rect.y, win)
+            champi(self.rect.x, self.rect.y - 40, win)
         self.image = brick_img
         surprise_sprites.remove(self)
         

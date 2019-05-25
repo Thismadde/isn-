@@ -123,8 +123,7 @@ class champi(pygame.sprite.Sprite):
             if player.health < 150:
                 player.health += 50
                 player.change_size(False)
-            else:
-                player.score += 50
+            player.score += 50
             champi_sprites.remove(self)
     def draw_champi(self):
         x_new = camera.apply_player([self.rect.x])
@@ -334,7 +333,7 @@ class Player(pygame.sprite.Sprite):
         self.images_left = [pygame.transform.flip(image, True, False) for image in images]
         self.index = 0
         self.image = images[self.index]
-        self.animation_time = 100
+        self.animation_time = 90
         self.current_time = 0
         self.animation_frames = 6
         self.current_frame = 0
@@ -395,7 +394,7 @@ class Player(pygame.sprite.Sprite):
             self.height = 60
             self.images = images
             self.images_right = images
-            self.images_left = [pygame.transform.flip(image, True, False) for image in images] # Flipping every image.
+            self.images_left = [pygame.transform.flip(image, True, False) for image in images]
             self.y_avant_transformation = self.rect.y
             self.x_avant_tranformation = self.rect.x
             self.rect = self.image_petit.get_rect()
@@ -405,7 +404,7 @@ class Player(pygame.sprite.Sprite):
             self.height = 80
             self.images = images_grande
             self.images_right = images_grande
-            self.images_left = [pygame.transform.flip(image, True, False) for image in images_grande]  # Flipping every image.
+            self.images_left = [pygame.transform.flip(image, True, False) for image in images_grande]
             self.x_avant_tranformation = self.rect.x
             self.y_avant_transformation = self.rect.y
             self.rect = self.image_grande.get_rect()
@@ -688,6 +687,8 @@ timer = pygame.time.Clock()
 font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
+score = font_cambria.render('Score : {}'.format(player.score), True, RED)
+
 
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
@@ -695,19 +696,20 @@ fps_all = 0
 number = 0
 while run:
     if GamePauseMenu == True:
-        print('yes')
         win.blit(game_pause,(0,0))
 
     dt = timer.tick(FPS)
-    #player.update(dt)
     if GamePauseMenu == True:
         win.blit(game_pause,(0,0))
+        
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F1:
                     GamePauseMenu = False
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
+        score = font_cambria.render('Score : {}'.format(score_up), True, RED)
+        win.blit( score , (500,500))
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 position = event.pos
@@ -715,6 +717,7 @@ while run:
                     GameOverMenu = False
                     player.vies = 3
                     player.health = 50
+                    player.score = 0
     elif GameOverMenu == False and GamePauseMenu == False:
         map.draw()
         surprise_sprites.update()
@@ -734,6 +737,7 @@ while run:
                 fps_all += timer.get_fps()
                 number += 1
                 fps_rect = fps_label.get_rect()
+                score_up = player.score
         keys = pygame.key.get_pressed()
 
         for goomba_list in goomba_sprites:
@@ -748,10 +752,9 @@ while run:
         player.moove(keys)
         player.lives()
         Player.update(player,dt)
+        
         #Compteur de FPS :
         dt = timer.tick() / 1000
-        win.blit(blue_img,(0,0))
-        win.blit(blue_img,(TILESIZE,0))
         win.blit(fps_label,fps_rect)
         #Fin du compteur
 

@@ -101,7 +101,7 @@ class champi(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
         pygame.sprite.Sprite.__init__(self,champi_sprites)
         self.width = TILESIZE
-        self.height = TILESIZE 
+        self.height = TILESIZE
         self.image = champi_img
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -125,7 +125,7 @@ class champi(pygame.sprite.Sprite):
                 player.change_size(False)
             else:
                 player.score += 50
-            champi_sprites.remove(self)  
+            champi_sprites.remove(self)
     def draw_champi(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(champi_img,(x_new,self.rect.y))
@@ -135,13 +135,13 @@ class champi(pygame.sprite.Sprite):
                 self.rect.x -= velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x += velgoomba 
+                    self.rect.x += velgoomba
                     self.orientation = "Right"
             if self.orientation == "Right":
                 self.rect.x += velgoomba
                 blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                 if not(blocks_hit_list == []):
-                    self.rect.x -= velgoomba*2 
+                    self.rect.x -= velgoomba*2
                     self.orientation = "Left"
             self.gravity()
             self.draw_champi()
@@ -152,77 +152,7 @@ class champi(pygame.sprite.Sprite):
             if self.Vgravite < 1.5:
                 self.rect.y += self.Vgravite
                 self.Vgravite += 0.3
-            else: 
-                self.rect.y += self.Vgravite
-                self.Vgravite += 0.05
-            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-            if not(blocks_hit_list == []):
-                Collision = True
-                self.collision_with_ground = True
-                while Collision: 
-                    blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-                    if not (blocks_hit_list == []):
-                        self.rect.y -= 1
-                        self.Vgravite = 0.25
-                    else:
-                        Collision = False
             else:
-                self.draw_champi()
-
-class up(pygame.sprite.Sprite):
-    def __init__(self,x,y,win):
-        pygame.sprite.Sprite.__init__(self,up_sprites)
-        self.width = TILESIZE
-        self.height = TILESIZE 
-        self.image = up_img
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.Vgravite = 0.25
-        self.exist = True
-        self.x = x
-        self.y = y
-        self.orientation = "Right"
-    def update(self):
-        if self.exist:
-            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-            self.collision() 
-    def collision(self):
-        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
-        if (not (blocks_hit_list == [])):
-            self.exist = False
-            player.vies += 1
-            player.score += 100
-            up_sprites.remove(self)  
-
-
-    def draw_up(self):
-        x_new = camera.apply_player([self.rect.x])
-        win.blit(up_img,(x_new,self.rect.y))
-    def move(self):
-        if self.exist == True:
-            if self.orientation == "Left":
-                self.rect.x -= velgoomba
-                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-                if not(blocks_hit_list == []):
-                    self.rect.x += velgoomba 
-                    self.orientation = "Right"
-            if self.orientation == "Right":
-                self.rect.x += velgoomba
-                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
-                if not(blocks_hit_list == []):
-                    self.rect.x -= velgoomba*2 
-                    self.orientation = "Left"
-            self.gravity()
-            self.draw_up()
-            player.draw_player()
-    def gravity(self):
-        self.collision_with_ground = False
-        if not self.collision_with_ground:
-            if self.Vgravite < 1.5:
-                self.rect.y += self.Vgravite
-                self.Vgravite += 0.3
-            else: 
                 self.rect.y += self.Vgravite
                 self.Vgravite += 0.05
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
@@ -237,7 +167,77 @@ class up(pygame.sprite.Sprite):
                     else:
                         Collision = False
             else:
-                self.draw_up()       
+                self.draw_champi()
+
+class up(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,up_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = up_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.Vgravite = 0.25
+        self.exist = True
+        self.x = x
+        self.y = y
+        self.orientation = "Right"
+    def update(self):
+        if self.exist:
+            win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+            self.collision()
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        if (not (blocks_hit_list == [])):
+            self.exist = False
+            player.vies += 1
+            player.score += 100
+            up_sprites.remove(self)
+
+
+    def draw_up(self):
+        x_new = camera.apply_player([self.rect.x])
+        win.blit(up_img,(x_new,self.rect.y))
+    def move(self):
+        if self.exist == True:
+            if self.orientation == "Left":
+                self.rect.x -= velgoomba
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x += velgoomba
+                    self.orientation = "Right"
+            if self.orientation == "Right":
+                self.rect.x += velgoomba
+                blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                if not(blocks_hit_list == []):
+                    self.rect.x -= velgoomba*2
+                    self.orientation = "Left"
+            self.gravity()
+            self.draw_up()
+            player.draw_player()
+    def gravity(self):
+        self.collision_with_ground = False
+        if not self.collision_with_ground:
+            if self.Vgravite < 1.5:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.3
+            else:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.05
+            blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+            if not(blocks_hit_list == []):
+                Collision = True
+                self.collision_with_ground = True
+                while Collision:
+                    blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+                    if not (blocks_hit_list == []):
+                        self.rect.y -= 1
+                        self.Vgravite = 0.25
+                    else:
+                        Collision = False
+            else:
+                self.draw_up()
 
 class goomba(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -263,13 +263,13 @@ class goomba(pygame.sprite.Sprite):
         if ((not (blocks_hit_list == [])) and (player.rect.y < (self.rect.y - 40))):
             self.exist = False
             player.score += 500
-            goomba_sprites.remove(self)  
-        elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):  
+            goomba_sprites.remove(self)
+        elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):
             player.collisionLocked = True
             global past_time
-            past_time = time.time()         
-            player.health -= 50    
-            player.change_size(False)  
+            past_time = time.time()
+            player.health -= 50
+            player.change_size(False)
     def draw_goomba(self):
         x_new = camera.apply_player([self.rect.x])
         win.blit(goomba_img,(x_new,self.rect.y))
@@ -288,7 +288,7 @@ class goomba(pygame.sprite.Sprite):
                     self.rect.x -= velgoomba
                     self.orientation = "Left"
 
-  
+
 class Camera:
     def __init__(self,width,height):
         self.camera = pygame.Rect(0,0,width,height)
@@ -298,7 +298,7 @@ class Camera:
         self.height = height
     def apply_player(self,entity):
         x_cam = entity[0] + self.camera.x
-        return x_cam    
+        return x_cam
     def update(self,target):
         self.x = -target.rect.x + (WIDTH_display/2)
         self.y = -target.rect.y + (HEIGTH_display/2)
@@ -331,7 +331,7 @@ class Player(pygame.sprite.Sprite):
         self.Vgravite = 0.25
         self.images = images
         self.images_right = images
-        self.images_left = [pygame.transform.flip(image, True, False) for image in images] 
+        self.images_left = [pygame.transform.flip(image, True, False) for image in images]
         self.index = 0
         self.image = images[self.index]
         self.animation_time = 100
@@ -363,7 +363,7 @@ class Player(pygame.sprite.Sprite):
                 self.current_time = 0
                 self.index = (self.index + 1) % len(self.images)
                 self.image = self.images[self.index]
-        
+
         else:
             if self.orientation == "Left":
                 if self.health <= 50:
@@ -399,7 +399,7 @@ class Player(pygame.sprite.Sprite):
             self.y_avant_transformation = self.rect.y
             self.x_avant_tranformation = self.rect.x
             self.rect = self.image_petit.get_rect()
-            self.rect.x = self.x_avant_tranformation 
+            self.rect.x = self.x_avant_tranformation
             self.rect.y = self.y_avant_transformation + 20
         if self.health >= 100:
             self.height = 80
@@ -407,9 +407,9 @@ class Player(pygame.sprite.Sprite):
             self.images_right = images_grande
             self.images_left = [pygame.transform.flip(image, True, False) for image in images_grande]  # Flipping every image.
             self.x_avant_tranformation = self.rect.x
-            self.y_avant_transformation = self.rect.y 
+            self.y_avant_transformation = self.rect.y
             self.rect = self.image_grande.get_rect()
-            self.rect.x = self.x_avant_tranformation 
+            self.rect.x = self.x_avant_tranformation
             self.rect.y = self.y_avant_transformation - 20
     def invincibilite(self):
         new_time = time.time()
@@ -422,19 +422,19 @@ class Player(pygame.sprite.Sprite):
             player.invincibilite()
         win.blit(mario_vie,(360,5))
         textfont = myfont.render("X"+str(self.vies),3,RED)
-        win.blit(textfont,(400,5))  
+        win.blit(textfont,(400,5))
 
         player_score = myfont.render("Pts X"+str(self.score),3,RED)
-        win.blit(player_score,(500,5)) 
+        win.blit(player_score,(500,5))
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            if self.Vgravite < 1.5:
+            if self.Vgravite < 3.5:
+                self.rect.y += self.Vgravite
+                self.Vgravite += 0.2
+            else:
                 self.rect.y += self.Vgravite
                 self.Vgravite += 0.1
-            else: 
-                self.rect.y += self.Vgravite
-                self.Vgravite += 0.05
             blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
             if not(blocks_hit_list == []):
                 Collision = True
@@ -451,7 +451,7 @@ class Player(pygame.sprite.Sprite):
                         Collision = False
                         self.rect.y = old_y + 1
             else:
-                player.draw_player()               
+                player.draw_player()
     def collision_with_walls(self):
         if self.orientation == "Right":
             self.rect.x += vel
@@ -506,7 +506,7 @@ class Player(pygame.sprite.Sprite):
             for hit_blocks in blocks_hit_list2:
                 hit_blocks.transform_to_rock()
             if not(blocks_hit_list == []):
-                self.rect.y += self.jumpCount**2 * 0.005 
+                self.rect.y += self.jumpCount**2 * 0.005
                 self.isJumping = False
                 self.jumpCount = 50
             self.jumpCount -= 1
@@ -514,7 +514,7 @@ class Player(pygame.sprite.Sprite):
             self.isJumping = False
             self.jumpCount = 50
         self.draw_player()
-    def moove(self,keys):  
+    def moove(self,keys):
         if self.ancien_x != self.rect.x:
             self.isWalking = True
         else:
@@ -562,7 +562,7 @@ class Player(pygame.sprite.Sprite):
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         self.rect.y += vel
-                        camera.update(player)  
+                        camera.update(player)
                         self.draw_player()
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
@@ -617,7 +617,7 @@ class Surprise(pygame.sprite.Sprite):
         self.exist = True
     def update(self):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
-    def transform_to_rock(self):   
+    def transform_to_rock(self):
         liste = ["champi","champi","champi","champi","up","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin"]
         result = random.choice(liste)
         if result == "coin":
@@ -628,8 +628,8 @@ class Surprise(pygame.sprite.Sprite):
             champi(self.rect.x, self.rect.y - 40, win)
         self.image = brick_img
         surprise_sprites.remove(self)
-        
-        
+
+
 
 
 
@@ -697,7 +697,7 @@ while run:
     if GamePauseMenu == True:
         print('yes')
         win.blit(game_pause,(0,0))
-        
+
     dt = timer.tick(FPS)
     #player.update(dt)
     if GamePauseMenu == True:
@@ -712,7 +712,7 @@ while run:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 position = event.pos
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
-                    GameOverMenu = False  
+                    GameOverMenu = False
                     player.vies = 3
                     player.health = 50
     elif GameOverMenu == False and GamePauseMenu == False:
@@ -734,7 +734,7 @@ while run:
                 fps_all += timer.get_fps()
                 number += 1
                 fps_rect = fps_label.get_rect()
-        keys = pygame.key.get_pressed() 
+        keys = pygame.key.get_pressed()
 
         for goomba_list in goomba_sprites:
             goomba_list.move()
@@ -753,11 +753,11 @@ while run:
         win.blit(blue_img,(0,0))
         win.blit(blue_img,(TILESIZE,0))
         win.blit(fps_label,fps_rect)
-        #Fin du compteur  
-         
+        #Fin du compteur
+
     pygame.display.update()
 
-    
-     
+
+
 
 pygame.quit()

@@ -322,7 +322,7 @@ class Player(pygame.sprite.Sprite):
         self.images_left = [pygame.transform.flip(image, True, False) for image in images]
         self.index = 0
         self.image = images[self.index]
-        self.animation_time = 90
+        self.animation_time = 75
         self.current_time = 0
         self.animation_frames = 6
         self.current_frame = 0
@@ -420,9 +420,9 @@ class Player(pygame.sprite.Sprite):
     def gravity(self):
         self.collision_with_ground = False
         if not self.collision_with_ground:
-            if self.Vgravite < 3.5:
+            if self.Vgravite < 2:
                 self.rect.y += self.Vgravite
-                self.Vgravite += 0.2
+                self.Vgravite += 0.3
             else:
                 self.rect.y += self.Vgravite
                 self.Vgravite += 0.1

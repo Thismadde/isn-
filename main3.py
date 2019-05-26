@@ -17,7 +17,7 @@ velgoomba = 1
 TILESIZE = 64
 
 
-FPS = 1000
+FPS = 500
 
 GameOverMenu = False
 GamePauseMenu = False
@@ -122,7 +122,7 @@ class champi(pygame.sprite.Sprite):
             self.exist = False
             if player.health < 150:
                 player.health += 50
-                player.change_size(False)
+                player.change_size()
             else:
                 player.score += 50
             champi_sprites.remove(self)  
@@ -258,7 +258,7 @@ class goomba(pygame.sprite.Sprite):
             global past_time
             past_time = time.time()         
             player.health -= 50    
-            player.change_size(False)  
+            player.change_size()  
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
@@ -370,17 +370,18 @@ class Player(pygame.sprite.Sprite):
             self.vies -=  1
             self.respawn()
             self.health = 50
-            self.change_size(True)
+            self.change_size()
         if self.vies == 0:
-            self.change_size(True)
+            self.change_size()
             global GameOverMenu
             GameOverMenu = True
     def respawn(self):
+        self.change_size()
         self.rect.x = 50
         self.rect.y = 768-5*64
         camera.update(player)
 
-    def change_size(self,respawn):
+    def change_size(self):
         if self.health == 50:
             self.height = 60
             self.images = images

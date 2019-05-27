@@ -47,7 +47,8 @@ mario_jump_grand = pygame.transform.scale(mario_jump, (50,80))
 mario_jump_left =  pygame.transform.flip(mario_jump, True, False)
 mario_jump_left_grand = pygame.transform.scale(mario_jump_left, (50,80))
 arrivee_img = pygame.image.load("data/sprites/damier.png").convert()
-
+time_img = pygame.image.load("data/sprites/time.png").convert_alpha()
+time_img = pygame.transform.scale(time_img,(30,30))
 
 def load_images(path):
     global images
@@ -645,7 +646,7 @@ class Map(pygame.sprite.Sprite):
         self.load = First_Load
         self.faire_sol = True
         self.debut_timer = time.time()
-        self.temps = 10
+        self.temps = 100
         self.maxtime = int(self.debut_timer) + self.temps
         self.new_time = 0
         self.temps_restant = 0
@@ -682,6 +683,9 @@ class Map(pygame.sprite.Sprite):
         else:
             win.blit(background_img, (camera.apply_player([0]),-64*2))
             player.updatelives()
+            temps = myfont.render(str(map.temps_restant),3,RED)
+            win.blit(temps,(1140,5))
+            win.blit(time_img,(1100,5))
             coin_sprites.update()
             goomba_sprites.update()
             champi_sprites.update()

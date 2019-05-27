@@ -19,6 +19,7 @@ TILESIZE = 64
 
 FPS = 500
 
+level_termine = False
 GameOverMenu = False
 GamePauseMenu = False
 
@@ -46,6 +47,7 @@ mario_jump = pygame.transform.scale(mario_jump, (50,60))
 mario_jump_grand = pygame.transform.scale(mario_jump, (50,80))
 mario_jump_left =  pygame.transform.flip(mario_jump, True, False)
 mario_jump_left_grand = pygame.transform.scale(mario_jump_left, (50,80))
+arrivee_img = pygame.image.load("data/sprites/damier.png").convert()
 
 
 def load_images(path):
@@ -94,6 +96,7 @@ coin_sprites = pygame.sprite.Group()
 goomba_sprites = pygame.sprite.Group()
 champi_sprites = pygame.sprite.Group()
 up_sprites = pygame.sprite.Group()
+arrivee_sprites = pygame.sprite.Group()
 
 myfont = pygame.font.SysFont("monospace",30)
 
@@ -204,7 +207,7 @@ class up(pygame.sprite.Sprite):
                     self.rect.x -= velgoomba*2
                     self.orientation = "Left"
             self.gravity()
-            player.draw_player()
+           # player.draw_player()
     def delete(self):
         up_sprites.remove(self)
     def gravity(self):
@@ -438,11 +441,11 @@ class Player(pygame.sprite.Sprite):
                         self.Vgravite = 0.25
                     else:
                         Collision = False
-                    if old_y - self.rect.y > 10: #Eviter le bug du player qui passe au dessus
+                    if old_y - self.rect.y > 60: #Eviter le bug du player qui passe au dessus
                         Collision = False
                         self.rect.y = old_y + 1
-            else:
-                player.draw_player()
+            #else:
+                #player.draw_player()
     def collision_with_walls(self):
         if self.orientation == "Right":
             self.rect.x += vel
@@ -477,18 +480,8 @@ class Player(pygame.sprite.Sprite):
             else:
                 return False
     def draw_player(self):
-        if (self.orientation == "Right"):
-            x_new = camera.apply_player([self.rect.x])
-            win.blit(self.image,(x_new,self.rect.y))
-        if (self.orientation == "Left"):
-            x_new = camera.apply_player([self.rect.x])
-            win.blit(self.image,(x_new,self.rect.y))
-        if (self.orientation == "Up"):
-            x_new = camera.apply_player([self.rect.x])
-            win.blit(self.image,(x_new,self.rect.y))
-        if (self.orientation == "Down"):
-            x_new = camera.apply_player([self.rect.x])
-            win.blit(self.image,(x_new,self.rect.y))
+        x_new = camera.apply_player([self.rect.x])
+        win.blit(self.image,(x_new,self.rect.y))
     def jump(self):
         if 0<= self.jumpCount <=50:
             self.rect.y -= self.jumpCount**2 * 0.005
@@ -504,7 +497,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.isJumping = False
             self.jumpCount = 50
-        self.draw_player()
+        #self.draw_player()
     def moove(self,keys):
         if self.ancien_x != self.rect.x:
             self.isWalking = True
@@ -538,7 +531,7 @@ class Player(pygame.sprite.Sprite):
                     self.update(dt)
                 else:
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if keys[pygame.K_RIGHT]:
                 self.orientation = "Right"
                 if not self.collision_with_walls():
@@ -547,14 +540,14 @@ class Player(pygame.sprite.Sprite):
                     self.update(dt)
                 else:
                     camera.update(player)
-                    self.draw_player()
+                    #self.draw_player()
             if (not self.isJumping):
                 if keys[pygame.K_DOWN]:
                     self.orientation = "Down"
                     if not ((self.y+vel)>HEIGTH_display-height)and not self.collision_with_walls():
                         self.rect.y += vel
                         camera.update(player)
-                        self.draw_player()
+                        #self.draw_player()
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
@@ -571,9 +564,26 @@ class Sol(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.win = win
+
+class Arrivee(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self,arrivee_sprites)
+        self.image = arrivee_img
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+    def update(self):
+        win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+        self.collision()
+    def collision(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        if not (blocks_hit_list == []):
+            global level_termine
+            level_termine = True
+
+
 class Coin(pygame.sprite.Sprite):
     def __init__(self,x,y,win,image):
-        print("POPO")
         pygame.sprite.Sprite.__init__(self,coin_sprites)
         self.width = TILESIZE
         self.height = TILESIZE
@@ -634,6 +644,7 @@ class Map(pygame.sprite.Sprite):
         self.height = HEIGHT_display
         self.load = First_Load
         self.faire_sol = True
+        self.debut_timer = time.time()
         self.draw()
 
     def draw(self):
@@ -652,10 +663,12 @@ class Map(pygame.sprite.Sprite):
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre_herbe)
                         if i == "5":
                             Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
-                        if i == "a":
+                        if i == "c":
                             Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
                         if i == "g":
                             goomba(rang*TILESIZE,rang_colonne*TILESIZE,win)
+                        if i == "a":
+                            Arrivee(rang*TILESIZE,rang_colonne*TILESIZE)
                         rang += 1
                     rang_colonne += 1
                     rang = 0
@@ -669,6 +682,7 @@ class Map(pygame.sprite.Sprite):
             goomba_sprites.update()
             champi_sprites.update()
             up_sprites.update()
+            arrivee_sprites.update()
     def reload(self):
         for i in surprise_sprites:
             i.delete()
@@ -682,6 +696,7 @@ class Map(pygame.sprite.Sprite):
         player.health = 50
         self.load = True
         player.respawn()
+        self.debut_timer = time.time()
 
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
@@ -709,6 +724,8 @@ while run:
         win.blit(game_pause,(0,0))
 
     dt = timer.tick(FPS)
+    if level_termine == True:
+        GamePauseMenu = True
     if GamePauseMenu == True:
         win.blit(game_pause,(0,0))
         
@@ -719,6 +736,8 @@ while run:
                 if event.key == pygame.K_F2:
                     map.reload()
                     GamePauseMenu = False
+                    if level_termine == True:
+                        level_termine = False
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
         score = font_cambria.render('Score : {}'.format(score_up), True, RED)
@@ -729,7 +748,7 @@ while run:
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
                     GameOverMenu = False  
                     map.reload()
-    elif GameOverMenu == False and GamePauseMenu == False:
+    elif GameOverMenu == False and GamePauseMenu == False and level_termine == False:
         map.draw()
         surprise_sprites.update()
         player.draw_player()

@@ -81,8 +81,9 @@ def load_images(path):
 
 images = load_images(path='data/courtmariocourt')
 
-background_img = pygame.image.load("data/map/map200.png").convert()
-width_fond = background_img.get_width()
+level_1 = pygame.image.load("data/map/level1.png").convert()
+level_2 = pygame.image.load("data/map/level2.png").convert()
+width_fond = level_1.get_width()
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
@@ -97,7 +98,8 @@ RED = (255,0,0)
 BLUE = (0, 0, 50)
 BROWN = (150,75,0)
 
-niveau = "data/map/map_200.txt"
+niveau_1 = "data/map/level1.txt"
+niveau_2 = "data/map/level2.txt"
 rang_colonne = 0
 rang = 0
 time_sleep = 500
@@ -350,6 +352,12 @@ class goomba(pygame.sprite.Sprite):
 class Camera:
     def __init__(self,width,height):
         self.camera = pygame.Rect(0,0,width,height)
+        self.width = width
+        self.x = 0
+        self.y = 0
+        self.height = height
+    def reload_camera(self):
+        self.camera = pygame.Rect(0,0,WIDTH_display,HEIGTH_display)
         self.width = width
         self.x = 0
         self.y = 0
@@ -636,6 +644,8 @@ class Sol(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.win = win
+    def delete(self):
+        sol_sprites.remove(self)
 
 class Arrivee(pygame.sprite.Sprite):
     def __init__(self,x,y):
@@ -718,7 +728,6 @@ class Map(pygame.sprite.Sprite):
         self.width = WIDTH_display
         self.height = HEIGHT_display
         self.load = First_Load
-        self.faire_sol = True
         self.debut_timer = time.time()
         self.temps = 100
         self.maxtime = int(self.debut_timer) + self.temps
@@ -730,15 +739,21 @@ class Map(pygame.sprite.Sprite):
         win.blit(background_img, (0, -TILESIZE*2))
         global rang_colonne
         global rang
+        if background_img == level_1:
+            width_fond = level_1.get_width()
+            niveau = niveau_1
+        else:
+            width_fond = level_2.get_width()
+            niveau = niveau_2
         if self.load:
             with open(niveau,"r") as f:
                 for ligne in f:
                     for i in ligne:
-                        if i == "4" and self.faire_sol == True:
+                        if i == "4":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,brick_img)
-                        if i == "2" and self.faire_sol == True:
+                        if i == "2":
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre)
-                        if i == "3" and self.faire_sol == True:
+                        if i == "3" :
                             Sol(rang*TILESIZE,rang_colonne*TILESIZE,win,terre_herbe)
                         if i == "5":
                             Surprise(rang*TILESIZE,rang_colonne*TILESIZE,win)
@@ -753,7 +768,6 @@ class Map(pygame.sprite.Sprite):
                     rang = 0
                 rang_colonne = 0
             self.load = False
-            self.faire_sol = False
         else:
             win.blit(background_img, (camera.apply_player([0]),-64*2))
             player.updatelives()
@@ -770,8 +784,6 @@ class Map(pygame.sprite.Sprite):
         pygame.mixer.music.stop()
         pygame.mixer.music.load('data/sound/main_theme.ogg')
         pygame.mixer.music.play(-1)
-        for i in surprise_sprites:
-            i.delete()
         for i in up_sprites:
             i.delete()
         for i in goomba_sprites:
@@ -779,6 +791,8 @@ class Map(pygame.sprite.Sprite):
         for i in champi_sprites:
             i.delete()
         for i in coin_sprites:
+            i.delete()
+        for i in sol_sprites:
             i.delete()
         player.health = 50
         self.load = True
@@ -795,7 +809,7 @@ class Map(pygame.sprite.Sprite):
 
 
 
-
+background_img = level_1
 
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
@@ -835,11 +849,13 @@ while run:
                 if event.key == pygame.K_F1:
                     GamePauseMenu = False
                 if event.key == pygame.K_F2:
+                    if level_termine == True:
+                        background_img = level_2
+                        level_termine = False
+                        camera.reload_camera()
                     map.reload()
                     player.vies = 3
                     GamePauseMenu = False
-                    if level_termine == True:
-                        level_termine = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 position = event.pos
                 if event.button == 1 and 350 < position[0] < 925 and 200 < position[1] < 310:
@@ -848,6 +864,8 @@ while run:
                     GamePauseMenu = False
                     if level_termine == True:
                         level_termine = False
+                        background_img = level_2
+                        camera.reload_camera()
                     map.reload()
                     player.vies = 3
     if GameOverMenu == True:

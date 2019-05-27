@@ -49,6 +49,10 @@ mario_jump_left_grand = pygame.transform.scale(mario_jump_left, (50,80))
 arrivee_img = pygame.image.load("data/sprites/damier.png").convert()
 time_img = pygame.image.load("data/sprites/time.png").convert_alpha()
 time_img = pygame.transform.scale(time_img,(30,30))
+thwomp_1 = pygame.image.load("data/sprites/Thwomp.png").convert_alpha()
+thwomp_1 = pygame.transform.scale(thwomp_1,(128,200))
+thwomp_2 = pygame.image.load("data/sprites/Thwompvnr.png").convert_alpha()
+thwomp_2 = pygame.transform.scale(thwomp_2,(128,200))
 
 def load_images(path):
     global images
@@ -97,8 +101,46 @@ goomba_sprites = pygame.sprite.Group()
 champi_sprites = pygame.sprite.Group()
 up_sprites = pygame.sprite.Group()
 arrivee_sprites = pygame.sprite.Group()
+thwomp_sprite = pygame.sprite.Group()
 
 myfont = pygame.font.SysFont("monospace",30)
+
+
+class twhomp(pygame.sprite.Sprite):
+    def __init__(self,x,y,win):
+        pygame.sprite.Sprite.__init__(self,champi_sprites)
+        self.width = TILESIZE
+        self.height = TILESIZE
+        self.image = thwomp_1
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x
+        self.y = y
+    def update(self):
+        win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
+        self.collisionplayer()
+    def collisionplayer(self):
+        blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
+        if (not (blocks_hit_list == [])):
+            player.health -= 50
+    def move(self):
+        self.rect.y += 3
+        blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
+        if not(blocks_hit_list == []):
+            if self.rect.y < 100:
+                self.rect.y -= 2
+            else:
+                self.image = thwomp_1
+
+    def detect (self):
+        if self.rect.x - 20 < player.rect.x < self.rect.x + 20:
+            self.image = thwomp_2
+            new_time = time.time()
+            if new_time - past_time < 1.5:
+                new_time = time.time()
+            else:  
+                self.move()  
 
 class champi(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -803,6 +845,10 @@ while run:
                 fps_rect = fps_label.get_rect()
                 score_up = player.score
         keys = pygame.key.get_pressed()
+
+        twhomp1 = twhomp(200,100,win)
+        twhomp1.detect()
+        twhomp1.update()
 
         for goomba_list in goomba_sprites:
             goomba_list.move()

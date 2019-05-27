@@ -373,6 +373,7 @@ class Player(pygame.sprite.Sprite):
             self.respawn()
             self.health = 50
             self.change_size()
+            map.reload()
         if self.vies == 0:
             self.change_size()
             global GameOverMenu
@@ -644,6 +645,10 @@ class Map(pygame.sprite.Sprite):
         self.load = First_Load
         self.faire_sol = True
         self.debut_timer = time.time()
+        self.temps = 10
+        self.maxtime = int(self.debut_timer) + self.temps
+        self.new_time = 0
+        self.temps_restant = 0
         self.draw()
 
     def draw(self):
@@ -691,11 +696,25 @@ class Map(pygame.sprite.Sprite):
             i.delete()
         for i in champi_sprites:
             i.delete()
-        player.vies = 3
+        for i in coin_sprites:
+            i.delete()
         player.health = 50
         self.load = True
         player.respawn()
         self.debut_timer = time.time()
+        self.maxtime = int(self.debut_timer) + self.temps
+    def timer(self):
+        self.new_time = int(time.time())
+        self.temps_restant = self.maxtime - self.new_time
+        print(self.temps_restant)
+        if self.temps_restant == 0:
+            global GameOverMenu
+            GameOverMenu = True
+            print("GAMEOVER Temps ecoulé")
+
+
+
+
 
 camera = Camera(WIDTH_display,HEIGTH_display)
 player = Player(x,y)
@@ -734,6 +753,7 @@ while run:
                     GamePauseMenu = False
                 if event.key == pygame.K_F2:
                     map.reload()
+                    player.vies = 3
                     GamePauseMenu = False
                     if level_termine == True:
                         level_termine = False
@@ -746,6 +766,7 @@ while run:
                     if level_termine == True:
                         level_termine = False
                     map.reload()
+                    player.vies = 3
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
         score = font_cambria.render('Score : {}'.format(score_up), True, RED)
@@ -756,6 +777,7 @@ while run:
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
                     GameOverMenu = False
                     map.reload()
+                    player.vies = 3
     elif GameOverMenu == False and GamePauseMenu == False and level_termine == False:
         map.draw()
         surprise_sprites.update()
@@ -795,6 +817,8 @@ while run:
         dt = timer.tick() / 1000
         win.blit(fps_label,fps_rect)
         #Fin du compteur
+
+        map.timer()
 
     pygame.display.update()
 

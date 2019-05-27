@@ -22,7 +22,7 @@ FPS = 500
 level_termine = False
 GameOverMenu = False
 GamePauseMenu = False
-
+Vient_de_perdre_une_vie = False
 
 coin_sound = pygame.mixer.Sound("data/sound/coin.ogg")
 jump_sound = pygame.mixer.Sound("data/sound/small_jump.ogg")
@@ -442,8 +442,10 @@ class Player(pygame.sprite.Sprite):
             self.health = 50
             self.change_size()
             map.reload()
+            Vient_de_perdre_une_vie = True
         if self.vies == 0:
             self.change_size()
+            pygame.mixer.music.stop()
             global GameOverMenu
             GameOverMenu = True
     def respawn(self):
@@ -765,6 +767,7 @@ class Map(pygame.sprite.Sprite):
             thwomp_sprites.update()
             arrivee_sprites.update()
     def reload(self):
+        pygame.mixer.music.stop()
         pygame.mixer.music.load('data/sound/main_theme.ogg')
         pygame.mixer.music.play(-1)
         for i in surprise_sprites:
@@ -858,7 +861,9 @@ while run:
                     GameOverMenu = False
                     map.reload()
                     player.vies = 3
-    elif GameOverMenu == False and GamePauseMenu == False and level_termine == False:
+    if Vient_de_perdre_une_vie == True:
+        ########
+    elif GameOverMenu == False and GamePauseMenu == False and level_termine == False and Vient_de_perdre_une_vie == False:
         map.draw()
         surprise_sprites.update()
         player.draw_player()

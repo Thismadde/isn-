@@ -19,7 +19,6 @@ TILESIZE = 64
 
 FPS = 500
 
-demarre = True
 level_termine = False
 GameOverMenu = False
 GamePauseMenu = False
@@ -84,8 +83,6 @@ images = load_images(path='data/courtmariocourt')
 
 background_img = pygame.image.load("data/map/map200.png").convert()
 width_fond = background_img.get_width()
-
-demarre_img = pygame.image.load("data/1.png")
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
@@ -824,95 +821,88 @@ pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
 number = 0
 while run:
-    if demarre == True:
-        win.blit(demarre_img, (0,0))
+    if GamePauseMenu == True:
+        win.blit(game_pause,(0,0))
+
+    dt = timer.tick(FPS)
+    if level_termine == True:
+        GamePauseMenu = True
+    if GamePauseMenu == True:
+        win.blit(game_pause,(0,0))
+
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.type == pygame.K_RETURN:
-                    demarre = False
-    elif demarre == False:
-        if GamePauseMenu == True:
-            win.blit(game_pause,(0,0))
+                if event.key == pygame.K_F1:
+                    GamePauseMenu = False
+                if event.key == pygame.K_F2:
+                    map.reload()
+                    player.vies = 3
+                    GamePauseMenu = False
+                    if level_termine == True:
+                        level_termine = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                position = event.pos
+                if event.button == 1 and 350 < position[0] < 925 and 200 < position[1] < 310:
+                    GamePauseMenu = False
+                if event.button == 1 and 275 < position[0] < 1015 and 475 < position[1] < 585:
+                    GamePauseMenu = False
+                    if level_termine == True:
+                        level_termine = False
+                    map.reload()
+                    player.vies = 3
+    if GameOverMenu == True:
+        win.blit(game_over,(0,0))
+        score = font_cambria.render('Score : {}'.format(score_up), True, RED)
+        win.blit( score , (500,500))
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                position = event.pos
+                if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
+                    GameOverMenu = False
+                    map.reload()
+                    player.vies = 3
+    elif GameOverMenu == False and GamePauseMenu == False and level_termine == False and Vient_de_perdre_une_vie == False:
+        map.draw()
+        surprise_sprites.update()
+        player.draw_player()
+        clock = pygame.time.Clock()
+        milliseconds = clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                print("Moyenne des FPS :" + str(fps_all/number))
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    player.isJumping = True
 
-        dt = timer.tick(FPS)
-        if level_termine == True:
-            GamePauseMenu = True
-        if GamePauseMenu == True:
-            win.blit(game_pause,(0,0))
-
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_F1:
-                        GamePauseMenu = False
-                    if event.key == pygame.K_F2:
-                        map.reload()
-                        player.vies = 3
-                        GamePauseMenu = False
-                        if level_termine == True:
-                            level_termine = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    position = event.pos
-                    if event.button == 1 and 350 < position[0] < 925 and 200 < position[1] < 310:
-                        GamePauseMenu = False
-                    if event.button == 1 and 275 < position[0] < 1015 and 475 < position[1] < 585:
-                        GamePauseMenu = False
-                        if level_termine == True:
-                            level_termine = False
-                        map.reload()
-                        player.vies = 3
-        if GameOverMenu == True:
-            win.blit(game_over,(0,0))
-            score = font_cambria.render('Score : {}'.format(score_up), True, RED)
-            win.blit( score , (500,500))
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    position = event.pos
-                    if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
-                        GameOverMenu = False
-                        map.reload()
-                        player.vies = 3
-        elif GameOverMenu == False and GamePauseMenu == False and level_termine == False and Vient_de_perdre_une_vie == False:
-            map.draw()
-            surprise_sprites.update()
-            player.draw_player()
-            clock = pygame.time.Clock()
-            milliseconds = clock.tick(FPS)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                    print("Moyenne des FPS :" + str(fps_all/number))
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        player.isJumping = True
-
-                elif event.type == USEREVENT:
-                    fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
-                    fps_all += timer.get_fps()
-                    number += 1
-                    fps_rect = fps_label.get_rect()
-                    score_up = player.score
-            keys = pygame.key.get_pressed()
+            elif event.type == USEREVENT:
+                fps_label = font_cambria.render('FPS : {:.2f}'.format(timer.get_fps()), True, RED)
+                fps_all += timer.get_fps()
+                number += 1
+                fps_rect = fps_label.get_rect()
+                score_up = player.score
+        keys = pygame.key.get_pressed()
 
 
-            for goomba_list in goomba_sprites:
-                goomba_list.move()
+        for goomba_list in goomba_sprites:
+            goomba_list.move()
 
-            for champi_list in champi_sprites:
-                champi_list.move()
+        for champi_list in champi_sprites:
+            champi_list.move()
 
-            for up_list in up_sprites:
-                up_list.move()
+        for up_list in up_sprites:
+            up_list.move()
 
-            player.moove(keys)
-            player.lives()
-            Player.update(player,dt)
+        player.moove(keys)
+        player.lives()
+        Player.update(player,dt)
 
-            #Compteur de FPS :
-            dt = timer.tick() / 1000
-            win.blit(fps_label,fps_rect)
-            #Fin du compteur
+        #Compteur de FPS :
+        dt = timer.tick() / 1000
+        win.blit(fps_label,fps_rect)
+        #Fin du compteur
 
-            map.timer()
+        map.timer()
 
     pygame.display.update()
 

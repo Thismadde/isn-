@@ -101,46 +101,47 @@ goomba_sprites = pygame.sprite.Group()
 champi_sprites = pygame.sprite.Group()
 up_sprites = pygame.sprite.Group()
 arrivee_sprites = pygame.sprite.Group()
-thwomp_sprite = pygame.sprite.Group()
+thwomp_sprites = pygame.sprite.Group()
 
 myfont = pygame.font.SysFont("monospace",30)
 
 
 class twhomp(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
-        pygame.sprite.Sprite.__init__(self,champi_sprites)
-        self.width = TILESIZE
-        self.height = TILESIZE
+        pygame.sprite.Sprite.__init__(self,thwomp_sprites)
         self.image = thwomp_1
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.x = x
-        self.y = y
+        self.orientation = "Down"
+        self.y_touch = 0
     def update(self):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collisionplayer()
+        self.move()
     def collisionplayer(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
             player.health -= 50
     def move(self):
-        self.rect.y += 3
+        if self.orientation == "Down":
+            if self.y_touch - self.rect.y < TILESIZE*2:
+                self.rect.y += 3
+                self.image = thwomp_2
+            else:
+                self.rect.y += 1
+        elif self.orientation == "Up":
+            if self.y_touch - self.rect.y > 10:
+                self.image = thwomp_1
+            self.rect.y -= 1
+
         blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
         if not(blocks_hit_list == []):
-            if self.rect.y < 100:
-                self.rect.y -= 2
-            else:
-                self.image = thwomp_1
-
-    def detect (self):
-        if self.rect.x - 20 < player.rect.x < self.rect.x + 20:
-            self.image = thwomp_2
-            new_time = time.time()
-            if new_time - past_time < 1.5:
-                new_time = time.time()
-            else:  
-                self.move()  
+            if self.orientation == "Down":
+                self.y_touch = self.rect.y
+                self.orientation = "Up"
+        if self.orientation == "Up" and self.rect.y < self.y_touch - TILESIZE*4:
+            self.orientation = "Down"
 
 class champi(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -732,6 +733,7 @@ class Map(pygame.sprite.Sprite):
             goomba_sprites.update()
             champi_sprites.update()
             up_sprites.update()
+            thwomp_sprites.update()
             arrivee_sprites.update()
     def reload(self):
         for i in surprise_sprites:
@@ -752,7 +754,6 @@ class Map(pygame.sprite.Sprite):
     def timer(self):
         self.new_time = int(time.time())
         self.temps_restant = self.maxtime - self.new_time
-        print(self.temps_restant)
         if self.temps_restant == 0:
             global GameOverMenu
             GameOverMenu = True
@@ -777,6 +778,8 @@ font_cambria = pygame.font.SysFont('Cambria',24)
 fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 score = font_cambria.render('Score : {}'.format(player.score), True, RED)
+
+twhomp1 = twhomp(200,100,win)
 
 
 USEREVENT = 24
@@ -846,9 +849,6 @@ while run:
                 score_up = player.score
         keys = pygame.key.get_pressed()
 
-        twhomp1 = twhomp(200,100,win)
-        twhomp1.detect()
-        twhomp1.update()
 
         for goomba_list in goomba_sprites:
             goomba_list.move()

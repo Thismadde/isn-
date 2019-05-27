@@ -861,8 +861,6 @@ while run:
                     GameOverMenu = False
                     map.reload()
                     player.vies = 3
-    if Vient_de_perdre_une_vie == True:
-        ########
     elif GameOverMenu == False and GamePauseMenu == False and level_termine == False and Vient_de_perdre_une_vie == False:
         map.draw()
         surprise_sprites.update()

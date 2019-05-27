@@ -16,7 +16,6 @@ vel = 3
 velgoomba = 1
 TILESIZE = 64
 
-
 FPS = 500
 
 level_termine = False
@@ -128,7 +127,7 @@ class champi(pygame.sprite.Sprite):
                 player.change_size()
             else:
                 player.score += 50
-            champi_sprites.remove(self)  
+            champi_sprites.remove(self)
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
@@ -191,7 +190,7 @@ class up(pygame.sprite.Sprite):
             self.exist = False
             player.vies += 1
             player.score += 100
-            up_sprites.remove(self)  
+            up_sprites.remove(self)
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
@@ -229,7 +228,7 @@ class up(pygame.sprite.Sprite):
                         self.rect.y -= 1
                         self.Vgravite = 0.25
                     else:
-                        Collision = False      
+                        Collision = False
 
 class goomba(pygame.sprite.Sprite):
     def __init__(self,x,y,win):
@@ -259,9 +258,9 @@ class goomba(pygame.sprite.Sprite):
         elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):
             player.collisionLocked = True
             global past_time
-            past_time = time.time()         
-            player.health -= 50    
-            player.change_size()  
+            past_time = time.time()
+            player.health -= 50
+            player.change_size()
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
@@ -434,7 +433,7 @@ class Player(pygame.sprite.Sprite):
                 Collision = True
                 self.collision_with_ground = True
                 old_y = self.rect.y
-                while Collision: #Système de collision amélioré Pour etre sur que le joueur touche le sol pile poil a 100%
+                while Collision: #SystÃ¨me de collision amÃ©liorÃ© Pour etre sur que le joueur touche le sol pile poil a 100%
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
@@ -633,8 +632,8 @@ class Surprise(pygame.sprite.Sprite):
         surprise_sprites.remove(self)
     def delete(self):
         surprise_sprites.remove(self)
-        
-        
+
+
 
 
 
@@ -728,7 +727,7 @@ while run:
         GamePauseMenu = True
     if GamePauseMenu == True:
         win.blit(game_pause,(0,0))
-        
+
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F1:
@@ -738,6 +737,15 @@ while run:
                     GamePauseMenu = False
                     if level_termine == True:
                         level_termine = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                position = event.pos
+                if event.button == 1 and 350 < position[0] < 925 and 200 < position[1] < 310:
+                    GamePauseMenu = False
+                if event.button == 1 and 275 < position[0] < 1015 and 475 < position[1] < 585:
+                    GamePauseMenu = False
+                    if level_termine == True:
+                        level_termine = False
+                    map.reload()
     if GameOverMenu == True:
         win.blit(game_over,(0,0))
         score = font_cambria.render('Score : {}'.format(score_up), True, RED)
@@ -746,7 +754,7 @@ while run:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 position = event.pos
                 if event.button == 1 and 510 < position[0] <810 and 565 < position[1] < 865:
-                    GameOverMenu = False  
+                    GameOverMenu = False
                     map.reload()
     elif GameOverMenu == False and GamePauseMenu == False and level_termine == False:
         map.draw()
@@ -782,7 +790,7 @@ while run:
         player.moove(keys)
         player.lives()
         Player.update(player,dt)
-        
+
         #Compteur de FPS :
         dt = timer.tick() / 1000
         win.blit(fps_label,fps_rect)

@@ -85,7 +85,11 @@ images = load_images(path='data/courtmariocourt')
 background_img = pygame.image.load("data/map/map200.png").convert()
 width_fond = background_img.get_width()
 
+<<<<<<< HEAD
 demarre_img = pygame.image.load("data/1.png")
+=======
+demarre_img = pygame.image.load("data/sprites/1.png")
+>>>>>>> 3c730417d9995c6a32bb382a03955c824c89d53b
 
 brick_img = pygame.image.load("data/sprites/brick_64.png").convert()
 terre = pygame.image.load("data/sprites/sol_2-64.png").convert()
@@ -828,7 +832,11 @@ while run:
         win.blit(demarre_img, (0,0))
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
+<<<<<<< HEAD
                 if event.type == pygame.K_RETURN:
+=======
+                if event.type == pygame.K_F1:
+>>>>>>> 3c730417d9995c6a32bb382a03955c824c89d53b
                     demarre = False
     elif demarre == False:
         if GamePauseMenu == True:
@@ -916,6 +924,11 @@ while run:
 
     pygame.display.update()
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 3c730417d9995c6a32bb382a03955c824c89d53b
 
 
 

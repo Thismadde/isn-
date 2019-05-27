@@ -827,7 +827,7 @@ fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 score = font_cambria.render('Score : {}'.format(player.score), True, RED)
 
-twhomp1 = twhomp(200,100,win)
+twhomp1 = twhomp(400,100,win)
 
 
 USEREVENT = 24

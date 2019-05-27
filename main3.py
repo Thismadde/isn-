@@ -4,6 +4,7 @@ import random
 import os
 pygame.init()
 
+pygame.mixer.init()
 
 
 HEIGTH_display = 768
@@ -21,6 +22,17 @@ FPS = 500
 level_termine = False
 GameOverMenu = False
 GamePauseMenu = False
+
+
+coin_sound = pygame.mixer.Sound("data/sound/coin.ogg")
+jump_sound = pygame.mixer.Sound("data/sound/small_jump.ogg")
+powerup_sound = pygame.mixer.Sound("data/sound/powerup.ogg")
+powerupappear_sound = pygame.mixer.Sound("data/sound/powerup_appears.ogg")
+up_sound = pygame.mixer.Sound("data/sound/one_up.ogg")
+goombakill_sound = pygame.mixer.Sound("data/sound/bump.ogg")
+
+pygame.mixer.music.load('data/sound/main_theme.ogg')
+pygame.mixer.music.play(-1)
 
 win = pygame.display.set_mode((WIDTH_display,HEIGTH_display))
 pygame.display.set_caption("Super Mario Bross")
@@ -115,6 +127,7 @@ class twhomp(pygame.sprite.Sprite):
         self.rect.y = y
         self.orientation = "Down"
         self.y_touch = 0
+        Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
     def update(self):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collisionplayer()
@@ -157,6 +170,8 @@ class champi(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.orientation = "Right"
+        pygame.mixer.Sound.play(powerupappear_sound)
+        
 
     def update(self):
         if self.exist:
@@ -172,6 +187,9 @@ class champi(pygame.sprite.Sprite):
             else:
                 player.score += 50
             champi_sprites.remove(self)
+
+            pygame.mixer.Sound.play(powerup_sound)
+            
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
@@ -235,6 +253,8 @@ class up(pygame.sprite.Sprite):
             player.vies += 1
             player.score += 100
             up_sprites.remove(self)
+            pygame.mixer.Sound.play(up_sound)
+            
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
@@ -299,12 +319,16 @@ class goomba(pygame.sprite.Sprite):
             self.exist = False
             player.score += 500
             goomba_sprites.remove(self)
+            pygame.mixer.Sound.play(goombakill_sound)
+            
         elif ((player.collisionLocked == False) and not (blocks_hit_list == [])):
             player.collisionLocked = True
             global past_time
             past_time = time.time()
             player.health -= 50
             player.change_size()
+            pygame.mixer.Sound.play(goombakill_sound)
+            
     def move(self):
         if self.exist == True:
             if self.orientation == "Left":
@@ -595,6 +619,8 @@ class Player(pygame.sprite.Sprite):
                 if keys[pygame.K_UP]:
                     if self.collision_with_ground:
                         self.isJumping = True
+                        pygame.mixer.Sound.play(jump_sound)
+                        
             return x,y
 
 
@@ -647,6 +673,8 @@ class Coin(pygame.sprite.Sprite):
             coin_sprites.remove(self)
             self.exist = False
             player.score += 50
+            pygame.mixer.Sound.play(coin_sound)
+            
     def delete(self):
         coin_sprites.remove(self)
 
@@ -665,7 +693,8 @@ class Surprise(pygame.sprite.Sprite):
     def update(self):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
     def transform_to_rock(self):
-        liste = ["champi","champi","champi","champi","up","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin"]
+        #liste = ["champi","champi","champi","champi","up","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin","coin"]
+        liste = ["champi","coin","up"]
         result = random.choice(liste)
         if result == "coin":
             Coin(self.rect.x, self.rect.y - 64, win,coin_img)
@@ -736,6 +765,8 @@ class Map(pygame.sprite.Sprite):
             thwomp_sprites.update()
             arrivee_sprites.update()
     def reload(self):
+        pygame.mixer.music.load('data/sound/main_theme.ogg')
+        pygame.mixer.music.play(-1)
         for i in surprise_sprites:
             i.delete()
         for i in up_sprites:

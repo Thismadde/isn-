@@ -30,6 +30,8 @@ powerup_sound = pygame.mixer.Sound("data/sound/powerup.ogg")
 powerupappear_sound = pygame.mixer.Sound("data/sound/powerup_appears.ogg")
 up_sound = pygame.mixer.Sound("data/sound/one_up.ogg")
 goombakill_sound = pygame.mixer.Sound("data/sound/bump.ogg")
+gameover_sound = pygame.mixer.Sound("data/sound/game_over.ogg")
+death_sound = pygame.mixer.Sound("data/sound/death.ogg")
 
 pygame.mixer.music.load('data/sound/main_theme.ogg')
 pygame.mixer.music.play(-1)
@@ -65,6 +67,8 @@ thwomp_1 = pygame.image.load("data/sprites/Thwomp.png").convert_alpha()
 thwomp_1 = pygame.transform.scale(thwomp_1,(128,200))
 thwomp_2 = pygame.image.load("data/sprites/Thwompvnr.png").convert_alpha()
 thwomp_2 = pygame.transform.scale(thwomp_2,(128,200))
+
+attente_img = pygame.image.load("data/attente/1.png")
 
 def load_images(path):
     global images
@@ -121,7 +125,7 @@ myfont = pygame.font.SysFont("monospace",30)
 
 
 class twhomp(pygame.sprite.Sprite):
-    def __init__(self,x,y,win):
+    def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self,thwomp_sprites)
         self.image = thwomp_1
         self.rect = self.image.get_rect()
@@ -129,11 +133,13 @@ class twhomp(pygame.sprite.Sprite):
         self.rect.y = y
         self.orientation = "Down"
         self.y_touch = 0
-        Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
+        #Coin(rang*TILESIZE,rang_colonne*TILESIZE,win,coin_img)
     def update(self):
         win.blit(self.image,(camera.apply_player([self.rect.x]),self.rect.y))
         self.collisionplayer()
         self.move()
+    def delete(self):
+        thwomp_sprites.remove(self)
     def collisionplayer(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if (not (blocks_hit_list == [])):
@@ -406,6 +412,7 @@ class Player(pygame.sprite.Sprite):
         self.current_frame = 0
         self.isWalking = True
         self.ancien_x = 0
+        self.mort = False
     def update_time_dependent(self, dt):
         if self.isJumping:
             if self.orientation == "Left":
@@ -449,13 +456,17 @@ class Player(pygame.sprite.Sprite):
             self.respawn()
             self.health = 50
             self.change_size()
-            map.reload()
-            Vient_de_perdre_une_vie = True
+            if self.vies != 0:
+                self.mort = True
+                pygame.mixer.music.stop()
+                pygame.mixer.Sound.play(death_sound)
         if self.vies == 0:
             self.change_size()
             pygame.mixer.music.stop()
             global GameOverMenu
             GameOverMenu = True
+            pygame.mixer.music.stop()
+            pygame.mixer.Sound.play(gameover_sound)
     def respawn(self):
         self.change_size()
         self.rect.x = 50
@@ -660,6 +671,8 @@ class Arrivee(pygame.sprite.Sprite):
     def collision(self):
         blocks_hit_list = pygame.sprite.spritecollide(self,player_sprite,False)
         if not (blocks_hit_list == []):
+            if background_img == level_2:
+                print("Terminé ! Vous avez gagné")
             global level_termine
             level_termine = True
 
@@ -763,6 +776,8 @@ class Map(pygame.sprite.Sprite):
                             goomba(rang*TILESIZE,rang_colonne*TILESIZE,win)
                         if i == "a":
                             Arrivee(rang*TILESIZE,rang_colonne*TILESIZE)
+                        if i == "t":
+                            twhomp(rang*TILESIZE,rang_colonne*TILESIZE)
                         rang += 1
                     rang_colonne += 1
                     rang = 0
@@ -793,6 +808,10 @@ class Map(pygame.sprite.Sprite):
         for i in coin_sprites:
             i.delete()
         for i in sol_sprites:
+            i.delete()
+        for i in thwomp_sprites:
+            i.delete()
+        for i in surprise_sprites:
             i.delete()
         player.health = 50
         self.load = True
@@ -827,9 +846,6 @@ fps_label = font_cambria.render('FPS : {}'.format(timer.get_fps()), True, RED)
 fps_rect = fps_label.get_rect()
 score = font_cambria.render('Score : {}'.format(player.score), True, RED)
 
-twhomp1 = twhomp(400,100,win)
-
-
 USEREVENT = 24
 pygame.time.set_timer(USEREVENT, 1000)
 fps_all = 0
@@ -837,10 +853,21 @@ number = 0
 while run:
     if GamePauseMenu == True:
         win.blit(game_pause,(0,0))
+    if player.mort:
+        win.blit(attente_img,(0,0))
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_:
+                    player.mort = False
+                    map.reload()
 
     dt = timer.tick(FPS)
     if level_termine == True:
-        GamePauseMenu = True
+        background_img = level_2
+        camera.reload_camera()
+        level_termine = False
+        map.reload()
+        player.vies = 3
     if GamePauseMenu == True:
         win.blit(game_pause,(0,0))
 
@@ -850,9 +877,7 @@ while run:
                     GamePauseMenu = False
                 if event.key == pygame.K_F2:
                     if level_termine == True:
-                        background_img = level_2
                         level_termine = False
-                        camera.reload_camera()
                     map.reload()
                     player.vies = 3
                     GamePauseMenu = False
@@ -864,8 +889,6 @@ while run:
                     GamePauseMenu = False
                     if level_termine == True:
                         level_termine = False
-                        background_img = level_2
-                        camera.reload_camera()
                     map.reload()
                     player.vies = 3
     if GameOverMenu == True:
@@ -879,7 +902,7 @@ while run:
                     GameOverMenu = False
                     map.reload()
                     player.vies = 3
-    elif GameOverMenu == False and GamePauseMenu == False and level_termine == False and Vient_de_perdre_une_vie == False:
+    elif GameOverMenu == False and GamePauseMenu == False and level_termine == False and player.mort == False:
         map.draw()
         surprise_sprites.update()
         player.draw_player()

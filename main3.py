@@ -523,7 +523,7 @@ class Player(pygame.sprite.Sprite):
                 Collision = True
                 self.collision_with_ground = True
                 old_y = self.rect.y
-                while Collision: #SystÃ¨me de collision amÃ©liorÃ© Pour etre sur que le joueur touche le sol pile poil a 100%
+                while Collision:
                     blocks_hit_list = pygame.sprite.spritecollide(self,sol_sprites,False)
                     if not (blocks_hit_list == []):
                         self.rect.y -= 1
@@ -857,7 +857,7 @@ while run:
         win.blit(attente_img,(0,0))
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_:
+                if event.key == pygame.K_SPACE:
                     player.mort = False
                     map.reload()
 

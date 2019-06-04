@@ -496,7 +496,6 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_ESCAPE]:
             global GamePauseMenu
             GamePauseMenu = True
-            print("youpi")
         if self.isJumping:
             self.jump()
             if keys[pygame.K_LEFT]:
